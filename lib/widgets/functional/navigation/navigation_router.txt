@@ -1,0 +1,137 @@
+import 'package:flutter/material.dart';
+
+import '../home_page.dart';
+import '../landing_page.dart';
+import '../page_not_found.dart';
+
+class AppRoutePath {
+  final sessionId;
+  final bool isUnknownRoute;
+  AppRoutePath.home()
+      : sessionId = null,
+        isUnknownRoute = false;
+
+  AppRoutePath.scrumSessionHome(this.sessionId) : isUnknownRoute = false;
+
+  AppRoutePath.unknownRoute()
+      : this.sessionId = -1,
+        isUnknownRoute = true;
+
+  bool get isSessionHomePage => (sessionId != null);
+
+  bool get isHomePage => sessionId != -1;
+  void printString() => print(sessionId);
+}
+
+class NavigationRouter extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _NavigationRouterState();
+}
+
+class _NavigationRouterState extends State<NavigationRouter> {
+  AppRouterDelegate _appRouterDelegate = AppRouterDelegate();
+  AppRouteInformationParser _appRouteInformationParser =
+      AppRouteInformationParser();
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+        routerDelegate: _appRouterDelegate,
+        routeInformationParser: _appRouteInformationParser);
+  }
+}
+
+class AppRouterDelegate extends RouterDelegate<AppRoutePath>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
+  final GlobalKey<NavigatorState> navigatorKey;
+  bool show404 = false;
+  String activeRoute = "landing";
+  String scrumSessionId = "";
+
+  AppRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
+
+  void navigateToSession(String sessionId) {
+    activeRoute = "session";
+    scrumSessionId = sessionId;
+    print(
+        "in navigate to session about to call notify change listener sessioID = $sessionId");
+    notifyListeners();
+  }
+
+  AppRoutePath get currentConfiguration {
+    print("in get current configuration");
+    if (scrumSessionId == "") {
+      return AppRoutePath.home();
+    } else {
+      return AppRoutePath.scrumSessionHome(scrumSessionId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("Build called... session id is $scrumSessionId");
+    return Navigator(
+      key: navigatorKey,
+      pages: [
+        if (activeRoute == 'landing')
+          MaterialPage(
+              child: LandingPage(
+                routerDelegate: this,
+                onTap: navigateToSession,
+              ),
+              key: ValueKey('Landing')),
+        if (activeRoute == 'session')
+          MaterialPage(
+              child: ScrumSessionPage(id: scrumSessionId),
+              key: ValueKey('Home')),
+        if (activeRoute == 'unknown')
+          MaterialPage(child: PageNotFound(), key: ValueKey('unknown'))
+      ],
+      onPopPage: (route, result) {
+        if (!route.didPop(result)) return false;
+
+        notifyListeners();
+        return true;
+      },
+    );
+  }
+
+  @override
+  Future<void> setNewRoutePath(AppRoutePath path) async {
+    print("AppRouterDelegate: in setNewRoutePath");
+    if (path.isSessionHomePage) {
+      scrumSessionId = path.sessionId;
+      return;
+    }
+    //activeRoute = "landing";
+  }
+}
+
+class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
+  @override
+  Future<AppRoutePath> parseRouteInformation(
+      RouteInformation routeInformation) async {
+    print(
+        "AppRouteInformationParser: ParseRouteInformation ${routeInformation.location}");
+    final uri = Uri.parse(routeInformation.location!);
+    //  RouteConfig routeConfig = NavigationUtil.resolveRouteToWidget(routeInformation.location!, routerMap);
+    //print("confing: ${routeConfig.route},${routeConfig.pathParameters}");
+    if (uri.pathSegments.length == 0) {
+      return AppRoutePath.home();
+    } else {
+      return AppRoutePath.scrumSessionHome("1");
+    }
+  }
+
+  @override
+  RouteInformation restoreRouteInformation(AppRoutePath configuration) {
+    print("AppRouteInformationParser: RestoreRouteInformation");
+    if (configuration.isSessionHomePage) {
+      return RouteInformation(location: '/sessions/${configuration.sessionId}');
+    }
+
+    if (configuration.isHomePage) {
+      return RouteInformation(location: '/');
+    }
+    return RouteInformation(location: '/404');
+  }
+}
