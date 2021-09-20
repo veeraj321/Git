@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:scrum_poker/widgets/functional/navigation/navigation_util.dart';
-import 'package:scrum_poker/widgets/functional/navigation/router_config.dart';
+import 'package:scrum_poker/pages/navigation/navigation_util.dart';
+import 'package:scrum_poker/pages/navigation/router_config.dart';
 
 import '../scrum_session/scrum_session_page.dart';
 import '../landing/landing_page.dart';
-import '../page_not_found.dart';
+import '../page_not_found/page_not_found.dart';
 
 var routerMap = {
   "/": (routerDelegate, pathParameters, queryParameters) =>

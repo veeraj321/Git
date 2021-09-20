@@ -1,6 +1,6 @@
 
 
-  import 'package:scrum_poker/widgets/functional/navigation/router_config.dart';
+  import 'package:scrum_poker/pages/navigation/router_config.dart';
 
 /// routeToWidget takens in an incoming url and finds an appropriate route mapping to 
   /// delete the route to. a template route sile routerMap is  required to use this function

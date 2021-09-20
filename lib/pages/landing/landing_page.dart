@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:scrum_poker/theme/theme.dart';
-import 'package:scrum_poker/widgets/functional/landing/page_widgets/join_an_existing_session.dart';
-import 'package:scrum_poker/widgets/functional/landing/page_widgets/start_new_session.dart';
-import 'package:scrum_poker/widgets/ui/responsive_widget.dart';
-
+import 'package:scrum_poker/pages/landing/page_widgets/join_an_existing_session.dart';
+import 'package:scrum_poker/pages/landing/page_widgets/start_new_session.dart';
 import '../navigation/navigation_router.dart';
 
 class LandingPage extends StatelessWidget {

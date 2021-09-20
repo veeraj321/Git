@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
-import 'package:scrum_poker/widgets/functional/scrum_session/page_widgets/participant_card.dart';
-import 'package:scrum_poker/widgets/ui/animatable/fade_in_out.dart';
+import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 
 class ScrumSessionPage extends StatefulWidget {
   final String id;
