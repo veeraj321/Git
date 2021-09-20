@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
-import 'package:scrum_poker/theme/theme.dart';
-import 'package:scrum_poker/widgets/functional/navigation/navigation_router.dart';
+import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() {
