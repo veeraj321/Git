@@ -66,10 +66,10 @@ class ScrumPokerFirebase {
       {required String sessionId,
       required String participantName,
       bool owner: false}) {
-    dbReference
-        .child(sessionId)
-        .child("participants")
-        .push(ScrumSessionParticipant(participantName, owner,ScrumSessionParticipant.newID()).toJson());
+    dbReference.child(sessionId).child("participants").push(
+        ScrumSessionParticipant(
+                participantName, owner, ScrumSessionParticipant.newID())
+            .toJson());
     // getScrumSession(sessionId);
   }
 
@@ -86,8 +86,7 @@ class ScrumPokerFirebase {
     });
   }
 
-
- void onNewParticipantRemoved(dynamic participantRemovedCallback) {
+  void onNewParticipantRemoved(dynamic participantRemovedCallback) {
     dbReference
         .child(scrumSession!.name!)
         .child("participants")
@@ -98,5 +97,24 @@ class ScrumPokerFirebase {
       //invoke the callback
       participantRemovedCallback(participant);
     });
+  }
+
+  void onNewStorySet(dynamic newStorySetCallback) {
+    dbReference
+        .child(scrumSession!.name!)
+        .child("activeStory")
+        .onChildChanged
+        .listen((data) {
+      Story newStory = Story.fromJSON(data);
+      newStorySetCallback(newStory);
+    });
+  }
+
+  void setActiveStory(id,title,description) {
+    Story newStory = Story(id, title, description);
+    dbReference
+        .child(scrumSession!.name!)
+        .child("activeStory")
+        .set(newStory.toJson().toString());
   }
 }

@@ -96,6 +96,21 @@ class ScrumSessionParticipant {
   }
 }
 
+class Story {
+  String? id;
+  String? title;
+  String? description;
+
+  Story(id, title, description);
+
+  factory Story.fromJSON(dynamic json) {
+    return Story(json['id'], json['title'], json['description']);
+  }
+
+  Map<String, dynamic> toJson() =>
+      {'title': this.title, 'id': id, 'description': this.description};  
+}
+
 // main() {
 //   ScrumSession session = ScrumSession(
 //       name: "FirstSession", startTime: DateTime.now());

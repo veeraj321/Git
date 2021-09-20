@@ -12,9 +12,8 @@ class ScrumPoker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-          accentColor: Colors.yellow[600], primaryColor: Colors.blue[800]),
-      title: 'Scrum Poker',
+      debugShowCheckedModeBanner: false,
+      title: 'Agile Poker',
       home: NavigationRouter(),
     );
   }

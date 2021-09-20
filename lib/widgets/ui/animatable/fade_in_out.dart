@@ -16,7 +16,6 @@ class _FadeInState extends State<FadeIn> {
   void initState() {
     super.initState();
     Future.delayed(Duration(microseconds: 300), () {
-      print("Widget opacity changed");
       setState(() {
         widgetOpacity = 1.0;
       });
@@ -24,7 +23,6 @@ class _FadeInState extends State<FadeIn> {
   }
 
   Widget build(BuildContext context) {
-    print("Build retrigged");
     return AnimatedOpacity(
       opacity: widgetOpacity,
       duration: Duration(milliseconds: widget.duration),
