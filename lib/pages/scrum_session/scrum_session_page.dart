@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
+import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_card.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/create_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
+import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
@@ -62,20 +64,26 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   Widget buildScrumSessionPage(BuildContext context) {
     return Column(children: [
       pageHeader(context),
-      buildCreateStoryPanel(context),
+      buildDisplayStoryPanel(context),
+      //buildCreateStoryPanel(context),
       Expanded(
-        child: buildParticipantsPanel(context),
-      )
+          child: SingleChildScrollView(
+        child:Column(children: [
+        buildParticipantsPanel(context),
+        ScrumCardList(onCardSelected: (String selectedValue) {
+          print(selectedValue);
+        })
+      ])))
     ]);
   }
 
   Widget buildParticipantsPanel(BuildContext context) {
-    return SingleChildScrollView(
-        child: Wrap(
+    return  Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: scrumSession?.participants
                     .map((participant) =>
                         participantCard(context, participant, _showCards))
                     .toList() ??
-                []));
+                []);
   }
 }

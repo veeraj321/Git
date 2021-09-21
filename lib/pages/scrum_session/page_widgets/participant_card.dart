@@ -7,8 +7,8 @@ import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 Widget participantCard(BuildContext context,
     ScrumSessionParticipant participant, bool showParticipant) {
   return Container(
-    height: 275,
-    width: 200,
+    height: 200,
+    width: 145,
     child: Card(
         elevation: 3.0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
@@ -23,18 +23,17 @@ Widget participantCard(BuildContext context,
                               image: AssetImage(
                                   "assets/images/moroccan-flower.png"),
                               fit: BoxFit.cover),
-                              borderRadius: BorderRadius.only(topLeft: Radius.circular(5),
-                              topRight: Radius.circular(5))
-
-                              ),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              topRight: Radius.circular(5))),
                       child: Center(
                           child: CircleAvatar(
-                        child: heading2(context: context, text: "13")
+                        child: heading4(context: context, text: "13")
                             .color(Colors.white),
-                        radius: 65,
+                        radius: 45,
                       )))),
-              heading6(context: context, text: participant.name)
-                  .paddingLRTB(left: 16, right: 16, top: 16, bottom: 24)
+              subtitle2(context: context, text: participant.name)
+                  .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16)
             ])),
   ).fadeInOut();
 }
