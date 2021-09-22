@@ -30,7 +30,7 @@ class _ScrumCardState extends State<ScrumCard> {
       duration: Duration(milliseconds: 300),
       height: (widget.isSelected ? 200 : 125),
       width: (widget.isSelected) ? 145 : 95,
-      //r  curve: Curves.linearToEaseOut,
+       curve: Curves.linearToEaseOut,
       child: GestureDetector(
           child: Card(
               elevation: 3.0,

@@ -46,7 +46,8 @@ class ScrumPokerFirebase {
       "startTime": DateTime.now().toUtc().toIso8601String(),
       "participants": [participant.toJson()],
       "summary": {"totalPoints": 0, "totalStories": 0},
-      "stories": []
+      "stories": [],
+      "activeStory":null
     });
     this.activeParticipant = participant;
 
@@ -155,6 +156,20 @@ class ScrumPokerFirebase {
         .child(scrumSession!.name!)
         .child("activeStory")
         .set(newStory.toJson());
+  }
+
+  void showCard() {
+    dbReference.child("${scrumSession!.name}/showCards").set(true);
+  }
+
+  void onShowCard(dynamic callback) {
+    dbReference.child("${scrumSession!.name}/showCards").onValue.listen((data) {
+      var value = data.snapshot;
+      print(value.val());
+      if (callback != null) {
+        callback(value.val());
+      }
+    });
   }
 
   /*

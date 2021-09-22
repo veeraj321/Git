@@ -21,9 +21,9 @@ class ScrumSessionPage extends StatefulWidget {
 class _ScrumSessionPageState extends State<ScrumSessionPage> {
   String? sessionId;
   ScrumSession? scrumSession;
-  bool _showCards = false;
   Story? activeStory;
   bool showNewStoryInput = false;
+  bool showEstimates = false;
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
     ScrumPokerFirebase.instance.onSessionInitialized(
@@ -40,11 +40,11 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void scrumSessionInitializationSuccessful(scrumSession) {
     setState(() {
       this.scrumSession = scrumSession;
-      this._showCards = true;
       ScrumPokerFirebase.instance.onNewParticipantAdded(onNewParticipantAdded);
       ScrumPokerFirebase.instance.onNewStorySet(onNewStorySet);
       ScrumPokerFirebase.instance
           .onStoryEstimateChanged(onStoryEstimatesChanged);
+      ScrumPokerFirebase.instance.onShowCard(onShowCardsEventTriggered);
     });
   }
 
@@ -66,19 +66,44 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void onNewStoryPressed() {
+    ScrumPokerFirebase.instance.setActiveStory(null, null, null);
     setState(() {
       this.showNewStoryInput = true;
     });
   }
 
-  void onShowCardsPressed() {}
+  void onShowCardsButtonPressed() {
+    ScrumPokerFirebase.instance.showCard();
+  }
+
+  void onShowCardsEventTriggered(bool value) {
+    setState(() {
+      this.showEstimates = value;
+    });
+  }
 
   void onCardSelected(String selectedValue) {
     ScrumPokerFirebase.instance.setStoryEstimate(selectedValue);
   }
 
   onStoryEstimatesChanged(participantEstimates) {
-   // print("Story estimates changed $participantEstimates");
+    // print("Story estimates changed $participantEstimates");
+    if (participantEstimates!=null && participantEstimates is Map) {
+      var estimateJson = participantEstimates.values;
+      var participants = scrumSession?.participants ?? [];
+      for (var estimate in estimateJson) {
+        var index = 0;
+        for (var participant in participants) {
+          if (estimate["participantid"] == participant.id) {
+            scrumSession?.participants[index].currentEstimate =
+                estimate["estimate"];
+            break;
+          }
+          index = index + 1;
+        }
+      }
+      setState(() {});
+    }
   }
 
   @override
@@ -94,12 +119,12 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       pageHeader(context),
       ((this.showNewStoryInput == false)
           ? buildDisplayStoryPanel(
-              context, activeStory, onNewStoryPressed, onShowCardsPressed)
+              context, activeStory, onNewStoryPressed, onShowCardsButtonPressed)
           : buildCreateStoryPanel(context)),
       Expanded(
           child: SingleChildScrollView(
               child: Column(children: [
-        buildParticipantsPanel(context),
+        buildParticipantsPanel(context, showEstimates),
         Divider(
           color: Colors.white38,
         ).margin(top: 8.0, bottom: 8.0),
@@ -108,12 +133,12 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     ]);
   }
 
-  Widget buildParticipantsPanel(BuildContext context) {
+  Widget buildParticipantsPanel(BuildContext context, showEstimates) {
     return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: scrumSession?.participants
                 .map((participant) =>
-                    participantCard(context, participant, _showCards))
+                    participantCard(context, participant, showEstimates))
                 .toList() ??
             []);
   }

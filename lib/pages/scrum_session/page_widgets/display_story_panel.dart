@@ -32,7 +32,9 @@ Widget buildDisplayStoryPanel(BuildContext context, Story? story,
                     context: context, text: "NEW STORY", color: Colors.blue))
             .margin(right: 16.0),
         TextButton(
-            onPressed: () {},
+            onPressed: () {
+              showCardsPressed();
+            },
             child: buttonText(
                 context: context, text: "SHOW CARDS", color: Colors.blue))
       ]).margin(top: 24)

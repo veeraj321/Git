@@ -90,8 +90,12 @@ class ScrumSessionParticipant {
         json['name'], json['owner'], json['id'], json['currentEstimate']);
   }
 
-  Map<String, dynamic> toJson() =>
-      {'name': this.name, 'id': id, 'owner': isOwner};
+  Map<String, dynamic> toJson() => {
+        'name': this.name,
+        'id': id,
+        'owner': isOwner,
+        'currentEstimate': currentEstimate
+      };
 
   static String newID() {
     return DateTime.now().millisecond.toString();
@@ -103,6 +107,7 @@ class Story {
   String? title;
   String? description;
   List estimates = [];
+  bool showCards = false;
   Story(this.id, this.title, this.description, this.estimates);
   // {
   //   this.id = id;
@@ -111,21 +116,33 @@ class Story {
   // }
 
   factory Story.fromJSON(dynamic json) {
-    var estimates = json["participantEstimates"]?.values ?? [];
-    var estimateList = estimates
-        ?.map((element) => StoryParticipantEstimate.fromJSON(element))
-        .toList();
-   
-    return Story(json["id"], json["title"], json["description"], estimateList);
+    String? anId, aDescription, aTitle;
+    var estimateList = [];
+    if (json != null) {
+      var estimates = json["participantEstimates"] ?? [];
+      estimateList = estimates?.values
+              ?.map((element) => StoryParticipantEstimate.fromJSON(element))
+              .toList() ??
+          [];
+      anId = json["id"];
+      aDescription = json["description"];
+      aTitle = json["title"];
+    }
+    print("Constructor complete");
+    return Story(anId, aTitle, aDescription, estimateList);
   }
 
-  Map<String, dynamic> toJson() => {
-        'title': this.title,
-        'id': id,
-        'description': this.description,
-        'participantEstimates':
-            estimates.map((estimate) => estimate.toJson()).toList()
-      };
+  Map<String, dynamic> toJson() {
+    print("in to json");
+    return {
+      'title': this.title,
+      'id': id,
+      'description': this.description,
+      'participantEstimates':
+          estimates.map((estimate) => estimate.toJson()).toList(),
+      'showCards': showCards
+    };
+  }
 }
 
 class StoryParticipantEstimate {
