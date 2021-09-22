@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:scrum_poker/rest/firebase_db.dart';
 
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
@@ -40,10 +41,15 @@ Widget _createStoryButtonsPanel(
     BuildContext context, storyId, storyTitle, storyDescription) {
   return Wrap(runSpacing: 10.0, children: [
     ElevatedButton(
-            onPressed: () {},
-            child: buttonText(
-                    context: context, text: "PLAY POKER", color: Colors.white)
-                .paddingAll(16.0))
+            onPressed: () {
+              ScrumPokerFirebase.instance.setActiveStory(
+                  storyId.text, storyTitle.text, storyDescription.text);
+            },
+            child:
+                Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
+              Icon(Icons.play_arrow).margin(right: 4),
+              buttonText(context: context, text: "PLAY", color: Colors.white)
+            ]).paddingAll(16.0))
         .margin(right: 24.0),
   ]).margin(top: 24);
 }

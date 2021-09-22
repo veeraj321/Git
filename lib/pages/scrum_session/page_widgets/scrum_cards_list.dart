@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
+import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
+import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 
 import 'scrum_card.dart';
 
@@ -38,14 +41,18 @@ class _ScrumCardListState extends State<ScrumCardList> {
 
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-        child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: cardValues
-                .map((cardValue) => ScrumCard(
-                      onCardSelected: cardSelected,
-                      value: cardValue,
-                      isSelected: (cardValue == selectedCardValue),
-                    ))
-                .toList()));
+        child: Column(children: [
+         // heading6(context: context, text: "My Estimate").color(Colors.white).margin(bottom:8.0),
+      Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: cardValues
+              .map((cardValue) => ScrumCard(
+                    onCardSelected: cardSelected,
+                    value: cardValue,
+                    isSelected: (cardValue == selectedCardValue),
+                  ))
+              .toList()),
+      
+    ]));
   }
 }

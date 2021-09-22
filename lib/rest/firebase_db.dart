@@ -1,6 +1,5 @@
 import 'package:firebase/firebase.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
-
 /*
   Singleton class to deal with connection to firebase
  */
@@ -11,6 +10,10 @@ class ScrumPokerFirebase {
   //callback method to be called when the session is initialized
   dynamic sessionInitializationCallback;
   dynamic sessionInitializationFailedCallback;
+  ScrumSessionParticipant? activeParticipant =
+      ScrumSessionParticipant("Jay", true, "850", null);
+  //key for the participant in the participants map
+  String? activeParticipantkey = "0";
 
   static late final ScrumPokerFirebase instance = ScrumPokerFirebase._();
   ScrumPokerFirebase._() {
@@ -35,18 +38,18 @@ class ScrumPokerFirebase {
   DatabaseReference get dbReference => _db!.ref("sessions");
 
   void startNewScrumSession(String sessionName, String sessionOwnerName) {
+    ScrumSessionParticipant participant = ScrumSessionParticipant(
+        sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
     dbReference.child(sessionName).set({
       "id": ScrumSession.newID(),
       "name": sessionName,
       "startTime": DateTime.now().toUtc().toIso8601String(),
-      "participants": [
-        ScrumSessionParticipant(
-                sessionOwnerName, true, ScrumSessionParticipant.newID())
-            .toJson()
-      ],
+      "participants": [participant.toJson()],
       "summary": {"totalPoints": 0, "totalStories": 0},
       "stories": []
     });
+    this.activeParticipant = participant;
+
     // getScrumSession(sessionName);
   }
 
@@ -57,7 +60,12 @@ class ScrumPokerFirebase {
 
   void getScrumSession(String sessionId) async {
     dbReference.child(sessionId).once("value").then((event) {
-      scrumSession = ScrumSession.fromJson(event.snapshot.toJson());
+      dynamic jsonData = event.snapshot.toJson();
+      scrumSession = ScrumSession.fromJson(jsonData);
+      scrumSession!.activeParticipant = this.activeParticipant;
+      this.activeParticipantkey =
+          getParticipantKey(activeParticipant, jsonData["participants"]);
+      scrumSession!.activeParticipantKey = this.activeParticipantkey;
       this.sessionInitializationCallback(scrumSession);
     });
   }
@@ -66,11 +74,15 @@ class ScrumPokerFirebase {
       {required String sessionId,
       required String participantName,
       bool owner: false}) {
-    dbReference.child(sessionId).child("participants").push(
-        ScrumSessionParticipant(
-                participantName, owner, ScrumSessionParticipant.newID())
-            .toJson());
+    ScrumSessionParticipant participant = ScrumSessionParticipant(
+        participantName, owner, ScrumSessionParticipant.newID(), null);
+
+    dbReference
+        .child(sessionId)
+        .child("participants")
+        .push(participant.toJson());
     // getScrumSession(sessionId);
+    this.activeParticipant = participant;
   }
 
   void onNewParticipantAdded(dynamic participantAddedCallback) {
@@ -103,18 +115,79 @@ class ScrumPokerFirebase {
     dbReference
         .child(scrumSession!.name!)
         .child("activeStory")
-        .onChildChanged
+        .onValue
         .listen((data) {
-      Story newStory = Story.fromJSON(data);
-      newStorySetCallback(newStory);
+      dynamic storyJsonMap = data.snapshot.toJson();
+      Story newStory = Story.fromJSON(storyJsonMap);
+      if (newStorySetCallback != null) {
+        newStorySetCallback(newStory);
+      }
     });
   }
 
-  void setActiveStory(id,title,description) {
-    Story newStory = Story(id, title, description);
+  void setStoryEstimate(String estimateValue) {
+    StoryParticipantEstimate estimate = StoryParticipantEstimate(
+        estimate: estimateValue,
+        participantId: this.activeParticipant?.id ?? '',
+        participantKey: this.activeParticipantkey ?? '');
+    dbReference
+        .child(
+            "${scrumSession!.name}/activeStory/participantEstimates/${this.activeParticipantkey}")
+        .set(estimate.toJson());
+  }
+
+  void onStoryEstimateChanged(dynamic callback) {
+    dbReference
+        .child(scrumSession!.name!)
+        .child("activeStory/participantEstimates")
+        .onValue
+        .listen((data) {
+      var participantEstimates = data.snapshot;
+      if (callback != null) {
+        callback(participantEstimates.toJson());
+      }
+    });
+  }
+
+  void setActiveStory(id, title, description) {
+    Story newStory = Story(id, title, description, []);
     dbReference
         .child(scrumSession!.name!)
         .child("activeStory")
-        .set(newStory.toJson().toString());
+        .set(newStory.toJson());
+  }
+
+  /*
+  * sets the participantkey in the firbase db. needed for estimate updates
+  */
+  String getParticipantKey(activeParticipant, participants) {
+    String participantkey = '';
+    var keys = participants.keys;
+    for (var key in keys) {
+      if (participants[key]['id'] == activeParticipant.id) {
+        participantkey = key;
+        break;
+      }
+    }
+    return participantkey;
   }
 }
+
+
+
+
+ //HACK FUNCTION, NOT SURE WHY FIREBASE IS RETURNING STRING INSTEAD OF JSON NEED TO DEBUG THAT
+// Map<String, dynamic> convertJSONStringtoMap({required String toConvert}) {
+//    Map<String, dynamic> jsonMap = Map<String, dynamic>();
+//   String onlyElementString = toConvert.substring(1, toConvert.length - 1);
+//   print(onlyElementString);
+//   List elementPair = onlyElementString.split(",");
+ 
+
+//   elementPair.forEach((element) {
+//     List nameValue = element.split(":");
+//     print(nameValue);
+//     jsonMap[nameValue.elementAt(0).trim()] = nameValue.elementAt(1).trim();
+//   });
+//   return jsonMap;
+// }

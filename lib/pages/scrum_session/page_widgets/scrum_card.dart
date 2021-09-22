@@ -60,6 +60,7 @@ class _ScrumCardState extends State<ScrumCard> {
                                           context: context, text: widget.value)
                                       .color(Colors.white)),
                               radius: widget.isSelected ? 55 : 35,
+                             
                             ))))
                   ])),
           onTap: onCardClicked),

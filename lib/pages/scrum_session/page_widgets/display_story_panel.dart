@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
+import 'package:scrum_poker/model/scrum_session_model.dart';
 
-Widget buildDisplayStoryPanel(BuildContext context) {
+Widget buildDisplayStoryPanel(BuildContext context, Story? story,
+    dynamic newStoryPressed, dynamic showCardsPressed) {
   return Card(
     elevation: 2.0,
     shape: roundedBorder(borderRadius: 5.0),
@@ -14,22 +16,18 @@ Widget buildDisplayStoryPanel(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              body1(context: context, text: "STORY    S1-01-01"),
-              heading5(
-                      context: context,
-                      text:
-                          "As a supplier I should be able to check for any incoming orders")
+              body2(context: context, text: story?.id ?? ''),
+              heading6(context: context, text: story?.title ?? '')
                   .margin(top: 4.0),
-              subtitle1(
-                      context: context,
-                      text:
-                          "Supplier has to be constantly looking for any orders that are coming in from the vendors")
+              body1(context: context, text: story?.description ?? '')
                   .margin(top: 16.0, bottom: 16.0),
             ],
           ).paddingAll(32)),
       Wrap(runSpacing: 10.0, children: [
         TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  newStoryPressed();
+                },
                 child: buttonText(
                     context: context, text: "NEW STORY", color: Colors.blue))
             .margin(right: 16.0),

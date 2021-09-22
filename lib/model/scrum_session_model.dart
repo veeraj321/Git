@@ -1,8 +1,3 @@
-import 'dart:math';
-
-import 'package:scrum_poker/theme/theme.dart';
-import 'package:uuid/uuid.dart';
-
 ///  Represents a Scrum Session
 
 class ScrumSession {
@@ -11,6 +6,9 @@ class ScrumSession {
   ScrumSessionSummary? summary;
   List<ScrumSessionParticipant> participants = [];
   String? id;
+  ScrumSessionParticipant? activeParticipant;
+  String? activeParticipantKey;
+  Story? activeStory;
 
   ScrumSession({required startTime, required name}) {
     this.id = newID();
@@ -50,7 +48,9 @@ class ScrumSession {
         'startTime': (startTime?.toIso8601String() ?? ''),
         'summary': summary?.toJson(),
         'participants':
-            participants.map((participant) => participant.toJson()).toList()
+            participants.map((participant) => participant.toJson()).toList(),
+        'activeParticant': this.activeParticipant?.toJson(),
+        'activeParticipantKey': this.activeParticipantKey
       };
 
   static String newID() {
@@ -77,15 +77,17 @@ class ScrumSessionParticipant {
   String id = newID();
   String name = "";
   bool isOwner = false;
-
-  ScrumSessionParticipant(name, isOwner, id) {
+  String? currentEstimate;
+  ScrumSessionParticipant(name, isOwner, id, currentEstimate) {
     this.name = name;
     this.id = id;
     this.isOwner = isOwner;
+    this.currentEstimate = currentEstimate;
   }
 
   factory ScrumSessionParticipant.fromJSON(dynamic json) {
-    return ScrumSessionParticipant(json['name'], json['owner'], json['id']);
+    return ScrumSessionParticipant(
+        json['name'], json['owner'], json['id'], json['currentEstimate']);
   }
 
   Map<String, dynamic> toJson() =>
@@ -100,15 +102,50 @@ class Story {
   String? id;
   String? title;
   String? description;
-
-  Story(id, title, description);
+  List estimates = [];
+  Story(this.id, this.title, this.description, this.estimates);
+  // {
+  //   this.id = id;
+  //   this.title = title;
+  //   this.description = description;
+  // }
 
   factory Story.fromJSON(dynamic json) {
-    return Story(json['id'], json['title'], json['description']);
+    var estimates = json["participantEstimates"]?.values ?? [];
+    var estimateList = estimates
+        ?.map((element) => StoryParticipantEstimate.fromJSON(element))
+        .toList();
+   
+    return Story(json["id"], json["title"], json["description"], estimateList);
   }
 
-  Map<String, dynamic> toJson() =>
-      {'title': this.title, 'id': id, 'description': this.description};  
+  Map<String, dynamic> toJson() => {
+        'title': this.title,
+        'id': id,
+        'description': this.description,
+        'participantEstimates':
+            estimates.map((estimate) => estimate.toJson()).toList()
+      };
+}
+
+class StoryParticipantEstimate {
+  String? participantId;
+  String? participantKey;
+  String? estimate;
+  StoryParticipantEstimate(
+      {this.participantId, this.estimate, this.participantKey});
+
+  factory StoryParticipantEstimate.fromJSON(dynamic json) {
+    return StoryParticipantEstimate(
+        participantId: json["participantId"],
+        estimate: json["estimate"],
+        participantKey: json["participantKey"]);
+  }
+  Map<String, String> toJson() => {
+        'participantid': this.participantId ?? '',
+        'estimate': this.estimate ?? '',
+        'participantKey': this.participantKey ?? ''
+      };
 }
 
 // main() {

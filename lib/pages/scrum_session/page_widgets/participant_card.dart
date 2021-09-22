@@ -28,11 +28,17 @@ Widget participantCard(BuildContext context,
                               topRight: Radius.circular(5))),
                       child: Center(
                           child: CircleAvatar(
-                        child: heading4(context: context, text: "13")
+                        child: heading5(
+                                context: context,
+                                text: participant.currentEstimate ?? '')
                             .color(Colors.white),
-                        radius: 45,
+                        radius: ((participant.currentEstimate == null ||
+                                participant.currentEstimate == '')
+                            ? 0
+                            : 40),
+                        backgroundColor: Colors.grey[500],
                       )))),
-              subtitle2(context: context, text: participant.name)
+              body1(context: context, text: participant.name)
                   .paddingLRTB(left: 8, right: 8, top: 8, bottom: 16)
             ])),
   ).fadeInOut();
