@@ -20,7 +20,7 @@ Widget startNewSession(BuildContext context, AppRouterDelegate routerDelegate) {
               body1(
                   context: context,
                   text:
-                      "Provide a name for the sesion and press start to start the session"),
+                      "Provide a name for the session and press start to start the session"),
               SizedBox(
                 height: 20,
               ),

@@ -25,6 +25,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   Story? activeStory;
   bool showNewStoryInput = false;
   bool showCards = false;
+  bool resetParticipantScrumCards = false;
+
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
     ScrumPokerFirebase.instance.onSessionInitialized(
@@ -64,6 +66,11 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     setState(() {
       this.activeStory = story;
       this.showCards = false;
+      this.showNewStoryInput = false;
+      this.scrumSession?.participants.forEach((participant) {
+        participant.currentEstimate = '';
+      });
+      this.resetParticipantScrumCards = true;
     });
   }
 
@@ -79,18 +86,17 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void onShowCardsEventTriggered(bool value) {
-    print("In show card events triggered value= $value");
     setState(() {
       this.showCards = value;
     });
   }
 
   void onCardSelected(String selectedValue) {
+    this.resetParticipantScrumCards = false;
     ScrumPokerFirebase.instance.setStoryEstimate(selectedValue);
   }
 
   onStoryEstimatesChanged(participantEstimates) {
-    // print("Story estimates changed $participantEstimates");
     if (participantEstimates != null && participantEstimates is Map) {
       var estimateJson = participantEstimates.values;
       var participants = scrumSession?.participants ?? [];
@@ -122,7 +128,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       pageHeader(context),
       ((this.showNewStoryInput == false)
           ? buildDisplayStoryPanel(
-              context, activeStory, onNewStoryPressed, onShowCardsButtonPressed)
+              context, activeStory, onNewStoryPressed, onShowCardsButtonPressed,scrumSession?.activeParticipant)
           : buildCreateStoryPanel(context)),
       Expanded(
           child: SingleChildScrollView(
@@ -131,13 +137,14 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         Divider(
           color: Colors.white38,
         ).margin(top: 8.0, bottom: 8.0),
-        ScrumCardList(onCardSelected: onCardSelected)
+        ScrumCardList(
+            onCardSelected: onCardSelected,
+            resetCardList: this.resetParticipantScrumCards,isLocked: this.showCards)
       ])))
     ]);
   }
 
   Widget buildParticipantsPanel(BuildContext context, showEstimates) {
-    print("In build participant spanel $showEstimates");
     return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: scrumSession?.participants

@@ -19,7 +19,6 @@ class RouteConfig {
       required this.queryParameters});
 
   Widget getPage(routerDelegate) {
-    //  print("Path Parameters ${this.pathParameters}");
     return this.routeCallBackFunction(
         routerDelegate, this.pathParameters, this.queryParameters);
   }

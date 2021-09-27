@@ -119,7 +119,7 @@ class ScrumPokerFirebase {
   void onNewStorySet(dynamic newStorySetCallback) {
     dbReference
         .child(scrumSession!.name!)
-        .child("activeStory")
+        .child("activeStory/detail")
         .onValue
         .listen((data) {
       dynamic storyJsonMap = data.snapshot.toJson();
@@ -158,8 +158,14 @@ class ScrumPokerFirebase {
     Story newStory = Story(id, title, description, []);
     dbReference
         .child(scrumSession!.name!)
-        .child("activeStory")
+        .child("activeStory/detail")
         .set(newStory.toJson());
+    dbReference
+        .child(scrumSession!.name!)
+        .child("activeStory/participantEstimates")
+        .set([]);
+
+    dbReference.child("${scrumSession!.name}/showCards").set(false);
   }
 
   void showCard() {

@@ -38,7 +38,8 @@ class Story {
       'description': this.description,
       'participantEstimates':
           estimates.map((estimate) => estimate.toJson()).toList(),
-      'showCards': showCards
+      'showCards': showCards,
+      'created':DateTime.now().toIso8601String()
     };
     return json;
   }

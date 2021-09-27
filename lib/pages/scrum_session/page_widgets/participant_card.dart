@@ -6,7 +6,6 @@ import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 
 Widget participantCard(BuildContext context,
     ScrumSessionParticipant participant, bool showEstimates) {
-  print("In participant card Show Cards= $showEstimates");
   return AnimatedContainer(
     duration: Duration(milliseconds: 300),
     curve: Curves.easeIn,

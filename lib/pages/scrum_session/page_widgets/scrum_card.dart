@@ -25,7 +25,6 @@ class _ScrumCardState extends State<ScrumCard> {
 
   @override
   Widget build(BuildContext context) {
-    // print("Build triggered in Scrum card... ${widget.selectedCardValue}");
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
       height: (widget.isSelected ? 200 : 125),

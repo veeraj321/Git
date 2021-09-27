@@ -1,12 +1,9 @@
-import 'dart:html';
-import 'dart:js';
+
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/**
- * Contains all the functions to get the UI components 
- */
+/// Contains all the functions to get the UI components 
 
 Text heading6(
     {required context, required String text, Color color: Colors.black}) {
@@ -94,48 +91,51 @@ Text _getStyledText(
 }
 
 class TextStyles {
-  static TextStyle button = GoogleFonts.lato(
+  static var _headingFont = GoogleFonts.hindVadodara;
+  static var _bodyFont = GoogleFonts.hindVadodara;
+
+  static TextStyle button = _bodyFont(
     letterSpacing: 1.25,
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
 
-  static TextStyle caption = GoogleFonts.lato(
+  static TextStyle caption = _bodyFont(
       letterSpacing: 0.4, fontSize: 12, fontWeight: FontWeight.normal);
 
-  static TextStyle overline = GoogleFonts.montserrat(
+  static TextStyle overline = _headingFont(
       letterSpacing: 1.5, fontSize: 10, fontWeight: FontWeight.normal);
 
-  static TextStyle body2 = GoogleFonts.lato(
+  static TextStyle body2 = _bodyFont(
     letterSpacing: 1.25,
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
 
-  static TextStyle body1 = GoogleFonts.lato(
+  static TextStyle body1 = _headingFont(
       letterSpacing: 0.5, fontSize: 16, fontWeight: FontWeight.normal);
 
-  static TextStyle subtitle2 = GoogleFonts.montserrat(
+  static TextStyle subtitle2 = _headingFont(
       letterSpacing: 0.1, fontSize: 14, fontWeight: FontWeight.w500);
 
-  static TextStyle subtitle1 = GoogleFonts.montserrat(
+  static TextStyle subtitle1 = _headingFont(
       letterSpacing: 0.15, fontSize: 16, fontWeight: FontWeight.normal);
 
-  static TextStyle heading1 = GoogleFonts.montserrat(
+  static TextStyle heading1 = _headingFont(
       letterSpacing: -1.5, fontSize: 96, fontWeight: FontWeight.w300);
 
-  static TextStyle heading2 = GoogleFonts.montserrat(
+  static TextStyle heading2 = _headingFont(
       letterSpacing: -0.5, fontSize: 60, fontWeight: FontWeight.w300);
 
-  static TextStyle heading3 = GoogleFonts.montserrat(
+  static TextStyle heading3 = _headingFont(
       letterSpacing: 0.0, fontSize: 48, fontWeight: FontWeight.normal);
 
-  static TextStyle heading4 = GoogleFonts.montserrat(
+  static TextStyle heading4 = _headingFont(
       letterSpacing: 0.25, fontSize: 34, fontWeight: FontWeight.normal);
 
-  static TextStyle heading5 = GoogleFonts.montserrat(
+  static TextStyle heading5 = _headingFont(
       letterSpacing: 0.0, fontSize: 24, fontWeight: FontWeight.normal);
 
-  static TextStyle heading6 = GoogleFonts.montserrat(
+  static TextStyle heading6 = _headingFont(
       letterSpacing: 0.15, fontSize: 20, fontWeight: FontWeight.w500);
 }
