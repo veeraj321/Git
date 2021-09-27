@@ -16,7 +16,7 @@ Widget buildDisplayStoryPanel(BuildContext context, Story? story,
               (story?.description?.length ?? 0) > 0)
          Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(5.0),
                   color: Colors.grey[100]),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
