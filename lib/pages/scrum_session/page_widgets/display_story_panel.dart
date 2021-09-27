@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
-import 'package:scrum_poker/model/scrum_session_model.dart';
 
 Widget buildDisplayStoryPanel(BuildContext context, Story? story,
     dynamic newStoryPressed, dynamic showCardsPressed) {

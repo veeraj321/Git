@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
+import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/create_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
@@ -23,7 +24,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   ScrumSession? scrumSession;
   Story? activeStory;
   bool showNewStoryInput = false;
-  bool showEstimates = false;
+  bool showCards = false;
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
     ScrumPokerFirebase.instance.onSessionInitialized(
@@ -62,11 +63,12 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void onNewStorySet(story) {
     setState(() {
       this.activeStory = story;
+      this.showCards = false;
     });
   }
 
   void onNewStoryPressed() {
-    ScrumPokerFirebase.instance.setActiveStory(null, null, null);
+    //  ScrumPokerFirebase.instance.setActiveStory(null, null, null);
     setState(() {
       this.showNewStoryInput = true;
     });
@@ -77,8 +79,9 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void onShowCardsEventTriggered(bool value) {
+    print("In show card events triggered value= $value");
     setState(() {
-      this.showEstimates = value;
+      this.showCards = value;
     });
   }
 
@@ -88,7 +91,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   onStoryEstimatesChanged(participantEstimates) {
     // print("Story estimates changed $participantEstimates");
-    if (participantEstimates!=null && participantEstimates is Map) {
+    if (participantEstimates != null && participantEstimates is Map) {
       var estimateJson = participantEstimates.values;
       var participants = scrumSession?.participants ?? [];
       for (var estimate in estimateJson) {
@@ -110,7 +113,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   Widget build(BuildContext context) {
     return AnimatedContainer(
         duration: Duration(microseconds: 300),
-        color: Theme.of(context).colorScheme.primary,
+        color: Colors.blue[900],
         child: buildScrumSessionPage(context));
   }
 
@@ -124,7 +127,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       Expanded(
           child: SingleChildScrollView(
               child: Column(children: [
-        buildParticipantsPanel(context, showEstimates),
+        buildParticipantsPanel(context, showCards),
         Divider(
           color: Colors.white38,
         ).margin(top: 8.0, bottom: 8.0),
@@ -134,6 +137,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   Widget buildParticipantsPanel(BuildContext context, showEstimates) {
+    print("In build participant spanel $showEstimates");
     return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: scrumSession?.participants

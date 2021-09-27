@@ -8,7 +8,7 @@ import '../page_not_found/page_not_found.dart';
 
 var routerMap = {
   "/": (routerDelegate, pathParameters, queryParameters) =>
-       ScrumSessionPage(id: "ExaDock"),
+      LandingPage(routerDelegate: routerDelegate, onTap: () {}),
   "/home/:sessionId": (routerDelegate, pathParameters, queryParameters) =>
       ScrumSessionPage(id: pathParameters["sessionId"]),
   "/not-found": (routerDelegate, pathParameters, queryParameters) =>

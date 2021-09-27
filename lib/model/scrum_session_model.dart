@@ -1,3 +1,7 @@
+import 'package:scrum_poker/model/scrum_session_participant_model.dart';
+import 'package:scrum_poker/model/scrum_session_summary_model.dart';
+import 'package:scrum_poker/model/story_model.dart';
+
 ///  Represents a Scrum Session
 
 class ScrumSession {
@@ -58,112 +62,13 @@ class ScrumSession {
   }
 }
 
-class ScrumSessionSummary {
-  double totalPoints = 0.0;
-  double totalStories = 0.0;
 
-  ScrumSessionSummary(totalPoints, totalStories);
 
-  factory ScrumSessionSummary.fromJson(dynamic json) {
-    return ScrumSessionSummary(
-        json['totalPoints'] as double, json['totalStories'] as double);
-  }
 
-  Map<String, dynamic> toJson() =>
-      {'totalPoints': totalPoints, 'totalStories': totalStories};
-}
 
-class ScrumSessionParticipant {
-  String id = newID();
-  String name = "";
-  bool isOwner = false;
-  String? currentEstimate;
-  ScrumSessionParticipant(name, isOwner, id, currentEstimate) {
-    this.name = name;
-    this.id = id;
-    this.isOwner = isOwner;
-    this.currentEstimate = currentEstimate;
-  }
 
-  factory ScrumSessionParticipant.fromJSON(dynamic json) {
-    return ScrumSessionParticipant(
-        json['name'], json['owner'], json['id'], json['currentEstimate']);
-  }
 
-  Map<String, dynamic> toJson() => {
-        'name': this.name,
-        'id': id,
-        'owner': isOwner,
-        'currentEstimate': currentEstimate
-      };
 
-  static String newID() {
-    return DateTime.now().millisecond.toString();
-  }
-}
-
-class Story {
-  String? id;
-  String? title;
-  String? description;
-  List estimates = [];
-  bool showCards = false;
-  Story(this.id, this.title, this.description, this.estimates);
-  // {
-  //   this.id = id;
-  //   this.title = title;
-  //   this.description = description;
-  // }
-
-  factory Story.fromJSON(dynamic json) {
-    String? anId, aDescription, aTitle;
-    var estimateList = [];
-    if (json != null) {
-      var estimates = json["participantEstimates"] ?? [];
-      estimateList = estimates?.values
-              ?.map((element) => StoryParticipantEstimate.fromJSON(element))
-              .toList() ??
-          [];
-      anId = json["id"];
-      aDescription = json["description"];
-      aTitle = json["title"];
-    }
-    print("Constructor complete");
-    return Story(anId, aTitle, aDescription, estimateList);
-  }
-
-  Map<String, dynamic> toJson() {
-    print("in to json");
-    return {
-      'title': this.title,
-      'id': id,
-      'description': this.description,
-      'participantEstimates':
-          estimates.map((estimate) => estimate.toJson()).toList(),
-      'showCards': showCards
-    };
-  }
-}
-
-class StoryParticipantEstimate {
-  String? participantId;
-  String? participantKey;
-  String? estimate;
-  StoryParticipantEstimate(
-      {this.participantId, this.estimate, this.participantKey});
-
-  factory StoryParticipantEstimate.fromJSON(dynamic json) {
-    return StoryParticipantEstimate(
-        participantId: json["participantId"],
-        estimate: json["estimate"],
-        participantKey: json["participantKey"]);
-  }
-  Map<String, String> toJson() => {
-        'participantid': this.participantId ?? '',
-        'estimate': this.estimate ?? '',
-        'participantKey': this.participantKey ?? ''
-      };
-}
 
 // main() {
 //   ScrumSession session = ScrumSession(

@@ -1,5 +1,8 @@
 import 'package:firebase/firebase.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
+import 'package:scrum_poker/model/scrum_session_participant_model.dart';
+import 'package:scrum_poker/model/story_model.dart';
+import 'package:scrum_poker/model/story_participant_estimate.dart';
 /*
   Singleton class to deal with connection to firebase
  */
@@ -47,7 +50,8 @@ class ScrumPokerFirebase {
       "participants": [participant.toJson()],
       "summary": {"totalPoints": 0, "totalStories": 0},
       "stories": [],
-      "activeStory":null
+      "activeStory": null,
+      "showCards": false,
     });
     this.activeParticipant = participant;
 
@@ -165,7 +169,6 @@ class ScrumPokerFirebase {
   void onShowCard(dynamic callback) {
     dbReference.child("${scrumSession!.name}/showCards").onValue.listen((data) {
       var value = data.snapshot;
-      print(value.val());
       if (callback != null) {
         callback(value.val());
       }
