@@ -28,7 +28,7 @@ Widget buildDisplayStoryPanel(BuildContext context, Story? story,
                   body1(context: context, text: story?.description ?? '')
                       .margin(top: 16.0, bottom: 16.0),
                 ],
-              ).paddingAll(32).margin(left:16.0,top: 16.0)),
+              )),
           
       if (participant?.isOwner ?? false) Wrap(runSpacing: 10.0, children: [
         TextButton(
