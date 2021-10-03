@@ -9,10 +9,8 @@ import '../page_not_found/page_not_found.dart';
 var routerMap = {
   "/": (routerDelegate, pathParameters, queryParameters) =>
       LandingPage(routerDelegate: routerDelegate, onTap: () {}),
-  "/home/:sessionId": (routerDelegate, pathParameters, queryParameters) =>
-      ScrumSessionPage(id: pathParameters["sessionId"]),
-  "/not-found": (routerDelegate, pathParameters, queryParameters) =>
-      PageNotFound(),
+  "/home/:sessionId": (routerDelegate, pathParameters, queryParameters)=>ScrumSessionPage(id: pathParameters["sessionId"]),
+  "/not-found": (routerDelegate, pathParameters, queryParameters) => PageNotFound(),
 };
 
 ///AppRoutePath is the state variable that holds the active Route and active Page
@@ -21,37 +19,19 @@ class AppRoutePath {
   final RouteConfig routeConfig;
 
   //initilize the app route Path
-  AppRoutePath.pushRoute(this.routeConfig);
-}
-
-class NavigationRouter extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _NavigationRouterState();
-}
-
-class _NavigationRouterState extends State<NavigationRouter> {
-  //initialize the empty state
-  @override
-  Widget build(BuildContext context) {
-    AppRouterDelegate _appRouterDelegate = AppRouterDelegate();
-    AppRouteInformationParser _appRouteInformationParser =
-        AppRouteInformationParser();
-    return MaterialApp.router(
-      routeInformationParser: _appRouteInformationParser,
-      routerDelegate: _appRouterDelegate,
-    );
-  }
+  AppRoutePath(this.routeConfig);
 }
 
 class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
-  final GlobalKey<NavigatorState> navigatorKey;
+  late final GlobalKey<NavigatorState> navigatorKey;
   String urlString = "";
-  RouteConfig routeConfig;
+  late RouteConfig routeConfig;
   Widget? activePage;
-  AppRouterDelegate()
-      : navigatorKey = GlobalKey<NavigatorState>(),
-        routeConfig = NavigationUtil.resolveRouteToWidget("/", routerMap);
+  AppRouterDelegate() {
+    navigatorKey = GlobalKey<NavigatorState>();
+    routeConfig = NavigationUtil.resolveRouteToWidget("/", routerMap);
+  }
 
   void pushRoute(String url) {
     this.routeConfig = NavigationUtil.resolveRouteToWidget(url, routerMap);
@@ -61,9 +41,10 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
 
   @override
   Widget build(BuildContext context) {
-    if (activePage == null) {
+    print("Router Delegate: build called ${routeConfig.route}");
+    // if (activePage == null) {
       this.activePage = this.routeConfig.getPage(this);
-    }
+    // }
     var page = MaterialPage(
         child: this.activePage!, key: ValueKey(activePage.toString()));
     return Navigator(
@@ -79,7 +60,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   }
 
   AppRoutePath get currentConfiguration {
-    return AppRoutePath.pushRoute(this.routeConfig);
+    return AppRoutePath(this.routeConfig);
   }
 
   @override
@@ -87,7 +68,9 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     // TODO: implement setNewRoutePath
     print("Set new route path ${configuration.routeConfig.route}");
     //set the incoming route to reflect the incoming route
+    this.routeConfig = configuration.routeConfig;
     this.urlString = configuration.routeConfig.route;
+    notifyListeners();
     return;
   }
 }
@@ -96,12 +79,11 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
   @override
   Future<AppRoutePath> parseRouteInformation(
       RouteInformation routeInformation) async {
-    print(
-        "AppRouteInformationParser parseRouteInformaton Called ${routeInformation.location!}");
     RouteConfig routeConfig = NavigationUtil.resolveRouteToWidget(
         routeInformation.location!, routerMap);
-    var page = routeConfig.getPage(null);
-    return AppRoutePath.pushRoute(routeConfig);
+    AppRoutePath path = AppRoutePath(routeConfig);
+    print("Path being set = ${path.routeConfig.route}");
+    return path;
   }
 
   @override

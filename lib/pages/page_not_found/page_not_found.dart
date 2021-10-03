@@ -1,10 +1,10 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 
 class PageNotFound extends StatelessWidget {
   @override
-  Widget build(BuildContext context){
-    return Container(alignment: Alignment.center,child: Text("Page not found",style: Theme.of(context).textTheme.headline2,),);
+  Widget build(BuildContext context) {
+    print("In build method of page not found");
+    return Center(child: heading1(context: context, text: "hello"));
   }
 }
