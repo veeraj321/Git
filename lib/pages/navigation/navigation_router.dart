@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scrum_poker/pages/join_session_with_link/join_session_with_link.dart';
 import 'package:scrum_poker/pages/navigation/navigation_util.dart';
 import 'package:scrum_poker/pages/navigation/router_config.dart';
 
@@ -9,6 +10,7 @@ import '../page_not_found/page_not_found.dart';
 var routerMap = {
   "/": (routerDelegate, pathParameters, queryParameters) =>
       LandingPage(routerDelegate: routerDelegate, onTap: () {}),
+  "/join/:sessionId":(routerDelegate,pathParameter,queryParameters)=>JoinSessionFromLink(id:pathParameter["sessionId"],routerDelegate: routerDelegate),
   "/home/:sessionId": (routerDelegate, pathParameters, queryParameters)=>ScrumSessionPage(id: pathParameters["sessionId"]),
   "/not-found": (routerDelegate, pathParameters, queryParameters) => PageNotFound(),
 };

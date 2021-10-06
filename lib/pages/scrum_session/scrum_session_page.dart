@@ -97,6 +97,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   onStoryEstimatesChanged(participantEstimates) {
+    print(participantEstimates);
     if (participantEstimates != null && participantEstimates is Map) {
       var estimateJson = participantEstimates.values;
       var participants = scrumSession?.participants ?? [];
@@ -111,6 +112,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
           index = index + 1;
         }
       }
+
       setState(() {});
     }
   }
@@ -128,7 +130,12 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       pageHeader(context),
       ((this.showNewStoryInput == false)
           ? buildDisplayStoryPanel(
-              context, activeStory, onNewStoryPressed, onShowCardsButtonPressed,scrumSession?.activeParticipant)
+              context,
+              activeStory,
+              onNewStoryPressed,
+              onShowCardsButtonPressed,
+              scrumSession?.activeParticipant,
+              scrumSession)
           : buildCreateStoryPanel(context)),
       Expanded(
           child: SingleChildScrollView(
@@ -139,7 +146,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         ).margin(top: 8.0, bottom: 8.0),
         ScrumCardList(
             onCardSelected: onCardSelected,
-            resetCardList: this.resetParticipantScrumCards,isLocked: this.showCards)
+            resetCardList: this.resetParticipantScrumCards,
+            isLocked: this.showCards)
       ])))
     ]);
   }

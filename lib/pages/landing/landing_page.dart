@@ -26,7 +26,7 @@ class LandingPage extends StatelessWidget {
               child: Wrap(
                 children: <Widget>[
                   startNewSession(context, routerDelegate!),
-                  joinAnExistingSession(context, routerDelegate!)
+                  joinAnExistingSession(context:context, routerDelegate:routerDelegate!)
                 ],
                 runSpacing: 10.0,
                 spacing: 10.0,
