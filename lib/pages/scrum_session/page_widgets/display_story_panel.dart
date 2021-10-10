@@ -6,6 +6,7 @@ import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
+import 'package:scrum_poker/widgets/ui/extensions/text_extensions.dart';
 
 Widget buildDisplayStoryPanel(
     BuildContext context,
@@ -26,9 +27,13 @@ Widget buildDisplayStoryPanel(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 heading4(context: context, text: session?.name ?? ''),
+                body2(
+                    context: context,
+                    text: "Click to copy the link to invite your team members"),
                 TextButton(
                   child: Wrap(runSpacing: 10, spacing: 10.0, children: [
-                    body2(context: context, text: getJoinUrl(session)),
+                    body1(context: context, text: getJoinUrl(session))
+                        .color(Colors.blue),
                     Icon(Icons.copy_outlined)
                   ]),
                   onPressed: () {
@@ -109,7 +114,7 @@ String getJoinUrl(ScrumSession? session) {
   if (session == null) {
     return '';
   } else {
-    return "${Uri.base.scheme}://${Uri.base.host}${Uri.base.port != 80 ? ':${Uri.base.port}' : ''}/#/join/${session.name}";
+    return "${Uri.base.scheme}://${Uri.base.host}${Uri.base.port != 80 && Uri.base.port != 443 ? ':${Uri.base.port}' : ''}/#/join/${session.name}";
   }
 }
 
