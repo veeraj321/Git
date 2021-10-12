@@ -49,11 +49,10 @@ Widget startNewSession(BuildContext context, AppRouterDelegate routerDelegate) {
                         // print("pressed");
                         // print(this.onTap);
                         // this.onTap("1");
-                        ScrumPokerFirebase.instance.startNewScrumSession(
-                            newSessionController.text,
-                            participantNameController.text);
-                        routerDelegate
-                            .pushRoute("/home/${newSessionController.text}");
+                        var sessionId = ScrumPokerFirebase.instance
+                            .startNewScrumSession(newSessionController.text,
+                                participantNameController.text);
+                        routerDelegate.pushRoute("/home/$sessionId");
                       },
                       child: Text("START")))
             ]))),

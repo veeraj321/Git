@@ -27,21 +27,18 @@ Widget joinAnExistingSession(
               body1(
                   context: context,
                   text: getDescription(joinWithLink, scrumSession)),
-             
               if (!joinWithLink)
                 TextField(
                   controller: existingSessionController,
                   decoration: InputDecoration(
                       hintText: "Enter the name of the session"),
                 ),
-             
               if (!joinWithLink || (joinWithLink && scrumSession != null))
                 TextField(
                   controller: participantNameController,
                   decoration:
                       InputDecoration(hintText: "Enter your name or nickname"),
                 ),
-              
               Center(
                   child: TextButton(
                       onPressed: () {
@@ -59,7 +56,7 @@ Widget joinAnExistingSession(
                             participantNameController.text);*/
                         var sessionId = existingSessionController.text;
                         if (joinWithLink) {
-                          sessionId = scrumSession!.name!;
+                          sessionId = scrumSession!.id!;
                         }
                         ScrumPokerFirebase.instance.joinScrumSession(
                             participantName: participantNameController.text,

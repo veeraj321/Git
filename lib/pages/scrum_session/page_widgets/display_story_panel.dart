@@ -114,7 +114,7 @@ String getJoinUrl(ScrumSession? session) {
   if (session == null) {
     return '';
   } else {
-    return "${Uri.base.scheme}://${Uri.base.host}${Uri.base.port != 80 && Uri.base.port != 443 ? ':${Uri.base.port}' : ''}/#/join/${session.name}";
+    return "${Uri.base.scheme}://${Uri.base.host}${Uri.base.port != 80 && Uri.base.port != 443 ? ':${Uri.base.port}' : ''}/#/join/${session.id}";
   }
 }
 

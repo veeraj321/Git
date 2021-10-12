@@ -40,11 +40,12 @@ class ScrumPokerFirebase {
   Database get realtimeDB => _db!;
   DatabaseReference get dbReference => _db!.ref("sessions");
 
-  void startNewScrumSession(String sessionName, String sessionOwnerName) {
+  String startNewScrumSession(String sessionName, String sessionOwnerName) {
+    String sessionId = ScrumSession.newID();
     ScrumSessionParticipant participant = ScrumSessionParticipant(
         sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
-    dbReference.child(sessionName).set({
-      "id": ScrumSession.newID(),
+    dbReference.child(sessionId).set({
+      "id": sessionId,
       "name": sessionName,
       "startTime": DateTime.now().toUtc().toIso8601String(),
       "participants": [participant.toJson()],
@@ -54,7 +55,7 @@ class ScrumPokerFirebase {
       "showCards": false,
     });
     this.activeParticipant = participant;
-
+    return sessionId;
     // getScrumSession(sessionName);
   }
 
@@ -92,7 +93,7 @@ class ScrumPokerFirebase {
 
   void onNewParticipantAdded(dynamic participantAddedCallback) {
     dbReference
-        .child(scrumSession!.name!)
+        .child(scrumSession!.id!)
         .child("participants")
         .onChildAdded
         .listen((data) {
@@ -105,7 +106,7 @@ class ScrumPokerFirebase {
 
   void onNewParticipantRemoved(dynamic participantRemovedCallback) {
     dbReference
-        .child(scrumSession!.name!)
+        .child(scrumSession!.id!)
         .child("participants")
         .onChildRemoved
         .listen((data) {
@@ -118,7 +119,7 @@ class ScrumPokerFirebase {
 
   void onNewStorySet(dynamic newStorySetCallback) {
     dbReference
-        .child(scrumSession!.name!)
+        .child(scrumSession!.id!)
         .child("activeStory/detail")
         .onValue
         .listen((data) {
@@ -137,13 +138,13 @@ class ScrumPokerFirebase {
         participantKey: this.activeParticipantkey ?? '');
     dbReference
         .child(
-            "${scrumSession!.name}/activeStory/participantEstimates/${this.activeParticipantkey}")
+            "${scrumSession!.id}/activeStory/participantEstimates/${this.activeParticipantkey}")
         .set(estimate.toJson());
   }
 
   void onStoryEstimateChanged(dynamic callback) {
     dbReference
-        .child(scrumSession!.name!)
+        .child(scrumSession!.id!)
         .child("activeStory/participantEstimates")
         .onValue
         .listen((data) {
@@ -157,23 +158,23 @@ class ScrumPokerFirebase {
   void setActiveStory(id, title, description) {
     Story newStory = Story(id, title, description, []);
     dbReference
-        .child(scrumSession!.name!)
+        .child(scrumSession!.id!)
         .child("activeStory/detail")
         .set(newStory.toJson());
     dbReference
-        .child(scrumSession!.name!)
+        .child(scrumSession!.id!)
         .child("activeStory/participantEstimates")
         .set([]);
 
-    dbReference.child("${scrumSession!.name}/showCards").set(false);
+    dbReference.child("${scrumSession!.id}/showCards").set(false);
   }
 
   void showCard() {
-    dbReference.child("${scrumSession!.name}/showCards").set(true);
+    dbReference.child("${scrumSession!.id}/showCards").set(true);
   }
 
   void onShowCard(dynamic callback) {
-    dbReference.child("${scrumSession!.name}/showCards").onValue.listen((data) {
+    dbReference.child("${scrumSession!.id}/showCards").onValue.listen((data) {
       var value = data.snapshot;
       if (callback != null) {
         callback(value.val());

@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/scrum_session_summary_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
+import 'package:uuid/uuid.dart';
 
 ///  Represents a Scrum Session
 
@@ -58,7 +60,8 @@ class ScrumSession {
       };
 
   static String newID() {
-    return DateTime.now().millisecond.toString();
+    String id = Uuid().v1().toString();
+    return id;
   }
 }
 
