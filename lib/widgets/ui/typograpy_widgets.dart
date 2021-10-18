@@ -1,9 +1,7 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Contains all the functions to get the UI components 
+/// Contains all the functions to get the UI components
 
 Text heading6(
     {required context, required String text, Color color: Colors.black}) {
@@ -91,29 +89,35 @@ Text _getStyledText(
 }
 
 class TextStyles {
-  static var _headingFont = GoogleFonts.hindVadodara;
-  static var _bodyFont = GoogleFonts.hindVadodara;
+  static var _headingFont = GoogleFonts.poppins;
+  static var _bodyFont = GoogleFonts.poppins;
 
   static TextStyle button = _bodyFont(
-    letterSpacing: 1.25,
+    //letterSpacing: 1.25,
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
 
   static TextStyle caption = _bodyFont(
-      letterSpacing: 0.4, fontSize: 12, fontWeight: FontWeight.normal);
+      // letterSpacing: 0.4,
+      fontSize: 12,
+      fontWeight: FontWeight.normal);
 
   static TextStyle overline = _headingFont(
-      letterSpacing: 1.5, fontSize: 10, fontWeight: FontWeight.normal);
+      //letterSpacing: 1.5,
+      fontSize: 10,
+      fontWeight: FontWeight.normal);
 
   static TextStyle body2 = _bodyFont(
-    letterSpacing: 1.25,
+    // letterSpacing: 1.25,
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
 
   static TextStyle body1 = _headingFont(
-      letterSpacing: 0.5, fontSize: 16, fontWeight: FontWeight.normal);
+      // letterSpacing: 0.5,
+      fontSize: 16,
+      fontWeight: FontWeight.normal);
 
   static TextStyle subtitle2 = _headingFont(
       letterSpacing: 0.1, fontSize: 14, fontWeight: FontWeight.w500);

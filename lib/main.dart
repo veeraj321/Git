@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/pages/page_not_found/page_not_found.dart';
+import 'package:scrum_poker/store/shared_preference.dart';
+import 'package:scrum_poker/theme/theme.dart';
 import 'package:url_strategy/url_strategy.dart';
 
-
-void main() {
+Future<void> main()  async {
   WidgetsFlutterBinding.ensureInitialized();
   FlutterError.onError = (FlutterErrorDetails details) {
     print("Error from INSIDE FRAMEWORK");
     print("Error: ${details.exception}");
     print("StackTrace: ${details.stack}");
   };
- // setPathUrlStrategy();
+  // setPathUrlStrategy();
+ await initalizeSharedPreference();
   runApp(ScrumPoker());
 }
 
 class ScrumPoker extends StatelessWidget {
   final AppRouterDelegate _appRouterDelegate = AppRouterDelegate();
-    final AppRouteInformationParser _appRouteInformationParser =
-        AppRouteInformationParser();
+  final AppRouteInformationParser _appRouteInformationParser =
+      AppRouteInformationParser();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp.router(
       routeInformationParser: _appRouteInformationParser,
       routerDelegate: _appRouterDelegate,
       title: 'Scrum Poker',
+      theme: appLightTheme,
     );
   }
 }

@@ -11,13 +11,13 @@ Widget pageHeader(BuildContext context) {
     title: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-      AnimatedContainer(duration: Duration(milliseconds: standard_duration),
-             width:150,
-             child:Image.asset("assets/images/logo_white.png")),
-      heading6(context: context, text: "Scrum Poker", color: Colors.white70)
+      // AnimatedContainer(duration: Duration(milliseconds: standard_duration),
+      //        width:150,
+      //        child:Image.asset("assets/images/logo_white.png")),
+      heading6(context: context, text: "Scrum Poker", color: Colors.white)
     ]),
     elevation: 0.0,
     bottomOpacity: 0.0,
-    backgroundColor: colorThemeData["primaryColor"],
+    backgroundColor: Theme.of(context).primaryColor,
   );
 }

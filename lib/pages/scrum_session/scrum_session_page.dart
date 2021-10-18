@@ -119,10 +119,10 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
+    return Material(child: AnimatedContainer(
         duration: Duration(microseconds: 300),
-        color: Colors.blue[900],
-        child: buildScrumSessionPage(context));
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: buildScrumSessionPage(context)));
   }
 
   Widget buildScrumSessionPage(BuildContext context) {

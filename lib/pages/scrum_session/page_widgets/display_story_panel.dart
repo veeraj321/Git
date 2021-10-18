@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
@@ -15,73 +16,84 @@ Widget buildDisplayStoryPanel(
     dynamic showCardsPressed,
     ScrumSessionParticipant? participant,
     ScrumSession? session) {
-  return Column(children: [
-    Card(
-        elevation: 2.0,
-        shape: roundedBorder(borderRadius: 5.0),
-        child: Container(
-          width: 800,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                heading4(context: context, text: session?.name ?? ''),
-                body2(
-                    context: context,
-                    text: "Click to copy the link to invite your team members"),
-                TextButton(
-                  child: Wrap(runSpacing: 10, spacing: 10.0, children: [
-                    body1(context: context, text: getJoinUrl(session))
-                        .color(Colors.blue),
-                    Icon(Icons.copy_outlined)
-                  ]),
-                  onPressed: () {
-                    copyUrlToClipboard(context, session);
-                  },
-                )
-              ],
-            ),
-            SizedBox(
-              height: 12,
-            ),
-            if (participant?.isOwner ?? false)
-              Wrap(runSpacing: 10.0, children: [
-                TextButton(
-                        onPressed: () {
-                          newStoryPressed();
-                        },
-                        child: buttonText(
-                            context: context,
-                            text: "NEW STORY",
-                            color: Colors.blue))
-                    .margin(right: 16.0),
-                TextButton(
-                        onPressed: () {
-                          showCardsPressed();
-                        },
-                        child: buttonText(
-                            context: context,
-                            text: "SHOW CARDS",
-                            color: Colors.blue))
-                    .margin(right: 16.0),
-                TextButton(
-                    onPressed: () {
-                      ScrumPokerFirebase.instance.setActiveStory(
-                          story?.id, story?.title, story?.description);
-                    },
-                    child: buttonText(
-                        context: context, text: "REPLAY", color: Colors.blue))
-              ])
-          ]).paddingAll(24.0),
-        )),
-    getStoryBoard(context, story) ?? Text('')
-  ]);
+  return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Row(children: [
+          getHeader(context, story, newStoryPressed, showCardsPressed,
+              participant, session)
+        ]),
+        getStoryBoard(context, story) ?? Text('')
+      ]);
 }
 
 RoundedRectangleBorder roundedBorder({required double borderRadius}) {
   return RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(borderRadius));
+}
+
+Widget getHeader(
+    BuildContext context,
+    Story? story,
+    dynamic newStoryPressed,
+    dynamic showCardsPressed,
+    ScrumSessionParticipant? participant,
+    ScrumSession? session) {
+  return Expanded(
+      //color: Theme.of(context).primaryColor,
+      child: Container(
+          color: Theme.of(context).primaryColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              heading4(context: context, text: session?.name ?? '')
+                  .color(Theme.of(context).scaffoldBackgroundColor),
+              caption(
+                      context: context,
+                      text: "Share this link to invite your team members")
+                  .color(Theme.of(context).scaffoldBackgroundColor)
+                  .margin(top: 2.0),
+              TextButton(
+                child: Wrap(runSpacing: 10, spacing: 10.0, children: [
+                  body2(context: context, text: getJoinUrl(session))
+                      .color(Colors.blue[100]!),
+                  Icon(
+                    Icons.copy_outlined,
+                    color: Colors.blue[100],
+                  ),
+                  body2(context: context, text: "COPY LINK")
+                      .color(Colors.blue[100]!)
+                ]),
+                onPressed: () {
+                  copyUrlToClipboard(context, session);
+                },
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              if (participant?.isOwner ?? false)
+                Wrap(runSpacing: 10.0, children: [
+                  pillButton(
+                          context: context,
+                          text: "NEW STORY",
+                          onPress: newStoryPressed)
+                      .margin(right: 16.0),
+                  pillButton(
+                    onPress: showCardsPressed,
+                    context: context,
+                    text: "SHOW CARDS",
+                  ).margin(right: 16.0),
+                  pillButton(
+                      onPress: () {
+                        ScrumPokerFirebase.instance.setActiveStory(
+                            story?.id, story?.title, story?.description);
+                      },
+                      context: context,
+                      text: "REPLAY")
+                ])
+            ],
+          ).margin(left: 96, bottom: 24)));
 }
 
 Widget? getStoryBoard(BuildContext context, Story? story) {
@@ -100,10 +112,10 @@ Widget? getStoryBoard(BuildContext context, Story? story) {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                body2(context: context, text: story?.id ?? ''),
-                heading6(context: context, text: story?.title ?? '')
+                caption(context: context, text: story?.id ?? ''),
+                subtitle2(context: context, text: story?.title ?? '')
                     .margin(top: 4.0),
-                body1(context: context, text: story?.description ?? '')
+                body2(context: context, text: story?.description ?? '')
                     .margin(top: 4.0),
               ],
             )).paddingAll(16.0));
@@ -123,4 +135,24 @@ void copyUrlToClipboard(BuildContext context, ScrumSession? session) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text('Link to your clipboard !')));
   });
+}
+
+Widget pillButton(
+    {required BuildContext context,
+    required String text,
+    required dynamic onPress}) {
+  return TextButton(
+      onPressed: () {
+        onPress();
+      },
+      child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(16.0)),
+            color: Theme.of(context).backgroundColor,
+          ),
+          child: buttonText(
+                  context: context,
+                  text: text,
+                  color: Theme.of(context).primaryColor)
+              .paddingLRTB(left: 16, right: 16, top: 4, bottom: 4)));
 }

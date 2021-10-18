@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hexcolor/hexcolor.dart';
+
+final appLightTheme = ThemeData(
+    primaryColor: const Color(0xff103288),
+    backgroundColor: const Color(0xffE7EAF2),
+    dividerColor: Colors.blueGrey,
+    textTheme: GoogleFonts.poppinsTextTheme(),
+    scaffoldBackgroundColor: Colors.blue[100]); //const Color(0xfff0f2f5));
 
 ThemeData applicationTheme(context) {
   final textTheme = Theme.of(context).textTheme;
   return ThemeData(
-      primaryColor: HexColor("#193D9F"),
+      primaryColor: const Color(0xff193D9F),
       accentColor: Colors.blueGrey,
       dividerColor: Colors.grey[300],
-      highlightColor: HexColor('#FFD6DA'),
-      primaryColorDark: HexColor('#07144B'),
-      backgroundColor: HexColor('#F6F6F6'),
-      secondaryHeaderColor: HexColor('#2B3D88'),
+      highlightColor: const Color(0xffFFD6DA),
+      primaryColorDark: const Color(0xff07144B),
+      backgroundColor: const Color(0xffF6F6F6),
+      secondaryHeaderColor: const Color(0xff2B3D88),
       textTheme: GoogleFonts.latoTextTheme(textTheme).copyWith(
           caption: GoogleFonts.lato(
               textStyle: textTheme.caption,
@@ -83,11 +89,11 @@ ThemeData applicationTheme(context) {
 
 var colorThemeData = {
   "primaryColor": Color(0X193D9F),
-  "secondayColor": HexColor('#29D890'),
-  'tertiaryColor': HexColor('#BBB7B7'),
-  "primaryTextColor": HexColor('#444444'),
+  "secondayColor": const Color(0xff29D890),
+  'tertiaryColor': const Color(0xffBBB7B7),
+  "primaryTextColor": const Color(0xff444444),
   "secondayTextColor": Colors.white,
-  "primaryIconColor": HexColor('#0DC6B8'),
+  "primaryIconColor": const Color(0xff0DC6B8),
   // "hintTextColor":HexColor('#C5CCD6'),
   "accentColor": Colors.grey,
   "transparentColor": Colors.transparent,
