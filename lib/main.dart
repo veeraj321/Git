@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
-import 'package:scrum_poker/pages/page_not_found/page_not_found.dart';
 import 'package:scrum_poker/store/shared_preference.dart';
 import 'package:scrum_poker/theme/theme.dart';
-import 'package:url_strategy/url_strategy.dart';
 
 Future<void> main()  async {
   WidgetsFlutterBinding.ensureInitialized();

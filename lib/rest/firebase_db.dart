@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:firebase/firebase.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/model/story_participant_estimate.dart';
+import 'package:scrum_poker/store/shared_preference.dart';
 /*
   Singleton class to deal with connection to firebase
  */
@@ -40,10 +43,14 @@ class ScrumPokerFirebase {
   Database get realtimeDB => _db!;
   DatabaseReference get dbReference => _db!.ref("sessions");
 
+  ///Starts a new scrum session [sessionName]
+  ///that is owned [sessionOwnerName] . This owner gets all the control like
+  ///starting a new session,replay etc
+  /// Returns a unique session id that identifies the session
   String startNewScrumSession(String sessionName, String sessionOwnerName) {
-    String sessionId = ScrumSession.newID();
     ScrumSessionParticipant participant = ScrumSessionParticipant(
         sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
+    String sessionId = ScrumSession.newID();
     dbReference.child(sessionId).set({
       "id": sessionId,
       "name": sessionName,
@@ -55,8 +62,10 @@ class ScrumPokerFirebase {
       "showCards": false,
     });
     this.activeParticipant = participant;
+    //session being started by the scrum master hence, save the participant
+    //details
+    saveActiveParticipant(sessionId, participant);
     return sessionId;
-    // getScrumSession(sessionName);
   }
 
   void onSessionInitialized(dynamic successCallback, dynamic failedCallback) {
@@ -68,6 +77,9 @@ class ScrumPokerFirebase {
     dbReference.child(sessionId).once("value").then((event) {
       dynamic jsonData = event.snapshot.toJson();
       scrumSession = ScrumSession.fromJson(jsonData);
+      if (this.activeParticipant == null) {
+        this.activeParticipant = getExistingActiveParticipant(sessionId);
+      }
       scrumSession!.activeParticipant = this.activeParticipant;
       this.activeParticipantkey =
           getParticipantKey(activeParticipant, jsonData["participants"]);
@@ -80,15 +92,19 @@ class ScrumPokerFirebase {
       {required String sessionId,
       required String participantName,
       bool owner: false}) {
-    ScrumSessionParticipant participant = ScrumSessionParticipant(
-        participantName, owner, ScrumSessionParticipant.newID(), null);
-
-    dbReference
-        .child(sessionId)
-        .child("participants")
-        .push(participant.toJson());
-    // getScrumSession(sessionId);
-    this.activeParticipant = participant;
+    ScrumSessionParticipant? participant =
+        getExistingActiveParticipant(sessionId);
+    if (participant == null) {
+      //no active participant stored for this session in shared preferences
+      participant = ScrumSessionParticipant(
+          participantName, owner, ScrumSessionParticipant.newID(), null);
+      dbReference
+          .child(sessionId)
+          .child("participants")
+          .push(participant.toJson());
+      this.activeParticipant = participant;
+      saveActiveParticipant(sessionId, participant);
+    }
   }
 
   void onNewParticipantAdded(dynamic participantAddedCallback) {
@@ -198,16 +214,45 @@ class ScrumPokerFirebase {
   }
 }
 
+///returns a saved [ScrumSession] object if the [sessionId] of incoming url
+///matches the existing session id stored locally else returns null object
+ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
+  ScrumSession? session;
+  String? existingSessionString =
+      preferences?.getString(PreferenceKeys.CURRENT_SESSION);
+  String? activeParticipantString =
+      preferences?.getString(PreferenceKeys.ACTIVE_PARTICIPANT);
+  if (existingSessionString != null) {
+    ScrumSessionParticipant participant =
+        ScrumSessionParticipant.fromJSON(activeParticipantString);
+    dynamic existingSessionJSON = jsonDecode(existingSessionString);
+    session = ScrumSession.fromJson(existingSessionJSON);
+    if (session.id == sessionId) {
+      return participant;
+    } else {
+      //if the session id does not match then the user is logging into a new
+      //sessoin, so reinitialize the session to null
+      return null;
+    }
+  }
+}
 
+/// saves  [ScrumSessionParticipant] from shared preferences so it can be
+/// retrieved in case the sessoin breaks in between
 
+void saveActiveParticipant(
+    String sessionId, ScrumSessionParticipant participant) {
+  String participantJSON = participant.toJson().toString();
+  preferences?.setString(PreferenceKeys.CURRENT_SESSION, sessionId);
+  preferences?.setString(PreferenceKeys.ACTIVE_PARTICIPANT, participantJSON);
+}
 
- //HACK FUNCTION, NOT SURE WHY FIREBASE IS RETURNING STRING INSTEAD OF JSON NEED TO DEBUG THAT
+//HACK FUNCTION, NOT SURE WHY FIREBASE IS RETURNING STRING INSTEAD OF JSON NEED TO DEBUG THAT
 // Map<String, dynamic> convertJSONStringtoMap({required String toConvert}) {
 //    Map<String, dynamic> jsonMap = Map<String, dynamic>();
 //   String onlyElementString = toConvert.substring(1, toConvert.length - 1);
 //   print(onlyElementString);
 //   List elementPair = onlyElementString.split(",");
- 
 
 //   elementPair.forEach((element) {
 //     List nameValue = element.split(":");

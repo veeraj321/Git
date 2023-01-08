@@ -9,5 +9,6 @@ Future<void> initalizeSharedPreference() async {
 }
 
 class PreferenceKeys {
-  static const String CURRENT_USER = "current_user";
+  static const String CURRENT_SESSION = "current_session";
+  static const String ACTIVE_PARTICIPANT = "active_participant";
 }

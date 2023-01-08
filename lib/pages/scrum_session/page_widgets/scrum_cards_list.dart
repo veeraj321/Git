@@ -15,7 +15,7 @@ class ScrumCardList extends StatefulWidget {
 class _ScrumCardListState extends State<ScrumCardList> {
   String? selectedCardValue;
   List cardValues = [
-    "0.5",
+    "0.5", 
     "1",
     "2",
     "3",
