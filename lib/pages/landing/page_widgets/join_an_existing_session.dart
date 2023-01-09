@@ -46,7 +46,6 @@ Widget joinAnExistingSession(
                         if (joinWithLink) {
                           sessionId = scrumSession!.id!;
                         }
-                        print("SESSION ID ==> $sessionId");
                         ScrumPokerFirebase spfb =
                             await ScrumPokerFirebase.instance;
                         await spfb.joinScrumSession(

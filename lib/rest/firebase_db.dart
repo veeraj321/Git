@@ -66,14 +66,14 @@ class ScrumPokerFirebase {
       "id": sessionId,
       "name": sessionName,
       "startTime": DateTime.now().toUtc().toIso8601String(),
-      "participants": {
-        {"0": participant.toJson()}
-      },
       "summary": {"totalPoints": 0, "totalStories": 0},
       "stories": [],
       "activeStory": null,
       "showCards": false,
     });
+    DatabaseReference partcipantRef =
+        dbReference.child(sessionId).child("participants").push();
+    partcipantRef.set(participant.toJson());
     this.activeParticipant = participant;
     //session being started by the scrum master hence, save the participant
     //details

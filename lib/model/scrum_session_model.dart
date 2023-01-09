@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/scrum_session_summary_model.dart';
 import 'package:scrum_poker/model/story_model.dart';

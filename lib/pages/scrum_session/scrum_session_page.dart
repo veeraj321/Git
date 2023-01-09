@@ -105,7 +105,6 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   onStoryEstimatesChanged(participantEstimates) {
-    print(participantEstimates);
     if (participantEstimates != null && participantEstimates is Map) {
       var estimateJson = participantEstimates.values;
       var participants = scrumSession?.participants ?? [];
