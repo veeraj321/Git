@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
@@ -85,8 +84,10 @@ Widget getHeader(
                     text: "SHOW CARDS",
                   ).margin(right: 16.0),
                   pillButton(
-                      onPress: () {
-                        ScrumPokerFirebase.instance.setActiveStory(
+                      onPress: () async {
+                        ScrumPokerFirebase spdb =
+                            await ScrumPokerFirebase.instance;
+                        spdb.setActiveStory(
                             story?.id, story?.title, story?.description);
                       },
                       context: context,

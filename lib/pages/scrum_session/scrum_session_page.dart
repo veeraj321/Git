@@ -29,25 +29,31 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
-    ScrumPokerFirebase.instance.onSessionInitialized(
+  }
+
+  void initializeScrumSession() async {
+    ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+    spfb.onSessionInitialized(
         scrumSessionInitializationSuccessful, scrumSessionInitializationFailed);
+    spfb.getScrumSession(widget.id);
   }
 
   @override
   void initState() {
     super.initState();
-    ScrumPokerFirebase.instance.getScrumSession(sessionId!);
+    initializeScrumSession();
     //set callbacks into the session
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
     setState(() {
       this.scrumSession = scrumSession;
-      ScrumPokerFirebase.instance.onNewParticipantAdded(onNewParticipantAdded);
-      ScrumPokerFirebase.instance.onNewStorySet(onNewStorySet);
-      ScrumPokerFirebase.instance
-          .onStoryEstimateChanged(onStoryEstimatesChanged);
-      ScrumPokerFirebase.instance.onShowCard(onShowCardsEventTriggered);
+      ScrumPokerFirebase.instance.then((ScrumPokerFirebase spfb) {
+        spfb.onNewParticipantAdded(onNewParticipantAdded);
+        spfb.onNewStorySet(onNewStorySet);
+        spfb.onStoryEstimateChanged(onStoryEstimatesChanged);
+        spfb.onShowCard(onShowCardsEventTriggered);
+      });
     });
   }
 
@@ -82,7 +88,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void onShowCardsButtonPressed() {
-    ScrumPokerFirebase.instance.showCard();
+    ScrumPokerFirebase.instance
+        .then((ScrumPokerFirebase spfb) => spfb.showCard());
   }
 
   void onShowCardsEventTriggered(bool value) {
@@ -93,7 +100,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   void onCardSelected(String selectedValue) {
     this.resetParticipantScrumCards = false;
-    ScrumPokerFirebase.instance.setStoryEstimate(selectedValue);
+    ScrumPokerFirebase.instance.then(
+        (ScrumPokerFirebase spfb) => spfb.setStoryEstimate(selectedValue));
   }
 
   onStoryEstimatesChanged(participantEstimates) {
@@ -119,10 +127,11 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(child: AnimatedContainer(
-        duration: Duration(microseconds: 300),
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: buildScrumSessionPage(context)));
+    return Material(
+        child: AnimatedContainer(
+            duration: Duration(microseconds: 300),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: buildScrumSessionPage(context)));
   }
 
   Widget buildScrumSessionPage(BuildContext context) {

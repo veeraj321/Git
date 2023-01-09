@@ -41,31 +41,22 @@ Widget joinAnExistingSession(
                 ),
               Center(
                   child: TextButton(
-                      onPressed: () {
-                        // print(RouteDirectory.homePage(sessionId: 2));
-                        // Navigator.pushNamed(context,
-                        //     RouteDirectory.homePage(sessionId: 20));
-                        // print("pressed");
-                        // print(this.onTap);
-                        // this.onTap("1");
-                        // var existingSession = ScrumPokerFirebase.instance
-                        //     .getScrumSessionById(
-                        //         existingSessionController.text);
-                        /*
-                         existingSessionController.text,
-                            participantNameController.text);*/
+                      onPressed: () async {
                         var sessionId = existingSessionController.text;
                         if (joinWithLink) {
                           sessionId = scrumSession!.id!;
                         }
-                        ScrumPokerFirebase.instance.joinScrumSession(
+                        print("SESSION ID ==> $sessionId");
+                        ScrumPokerFirebase spfb =
+                            await ScrumPokerFirebase.instance;
+                        await spfb.joinScrumSession(
                             participantName: participantNameController.text,
                             sessionId: sessionId,
                             owner: false);
 
                         routerDelegate.pushRoute("/home/$sessionId");
                       },
-                      child: Text("JOIN")))
+                      child: Text("JOINED NO ASYNC"))),
             ]))),
     width: 500,
   );

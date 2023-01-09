@@ -3,7 +3,6 @@ import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/pages/landing/page_widgets/join_an_existing_session.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
-import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 
 class JoinSessionFromLink extends StatefulWidget {
   final String id;
@@ -19,15 +18,19 @@ class JoinSessionFromLink extends StatefulWidget {
 class _JoinSessionFromLinkState extends State<JoinSessionFromLink> {
   ScrumSession? scrumSession;
 
-  _JoinSessionFromLinkState() {
-    ScrumPokerFirebase.instance.onSessionInitialized(
+  _JoinSessionFromLinkState();
+
+  void initializeScrumSession() async {
+    ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+    spfb.onSessionInitialized(
         scrumSessionInitializationSuccessful, scrumSessionInitializationFailed);
+    spfb.getScrumSession(widget.id);
   }
 
   @override
   void initState() {
     super.initState();
-    ScrumPokerFirebase.instance.getScrumSession(widget.id);
+    initializeScrumSession();
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:firebase/firebase.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
@@ -11,7 +12,8 @@ import 'package:scrum_poker/store/shared_preference.dart';
  */
 
 class ScrumPokerFirebase {
-  Database? _db;
+  static ScrumPokerFirebase? _scrumPokerDB;
+  FirebaseDatabase? _db;
   ScrumSession? scrumSession;
   //callback method to be called when the session is initialized
   dynamic sessionInitializationCallback;
@@ -21,41 +23,52 @@ class ScrumPokerFirebase {
   //key for the participant in the participants map
   String? activeParticipantkey = "0";
 
-  static late final ScrumPokerFirebase instance = ScrumPokerFirebase._();
-  ScrumPokerFirebase._() {
-    if (apps.isEmpty) {
-      initializeApp(
-          apiKey: "AIzaSyCnhNtKNvgvP2332dsLp_1SHx7RB0RH9yI",
-          authDomain: "scrum-poker-b2819.firebaseapp.com",
-          projectId: "scrum-poker-b2819",
-          storageBucket: "scrum-poker-b2819.appspot.com",
-          messagingSenderId: "708840805223",
-          appId: "1:708840805223:web:3566cd157397d6679455c2",
-          measurementId: "G-CH265MWWBG",
-          databaseURL:
-              "https://scrum-poker-b2819-default-rtdb.asia-southeast1.firebasedatabase.app/");
-    } else {
-      app();
-    }
-    _db = database();
+  //static late final ScrumPokerFirebase instance = ScrumPokerFirebase._();
+  ScrumPokerFirebase._({required FirebaseDatabase db}) {
+    _db = db;
   }
 
-  Database get realtimeDB => _db!;
+  static Future<ScrumPokerFirebase> get instance async {
+    if (_scrumPokerDB == null) {
+      FirebaseOptions appOptions = FirebaseOptions(
+          apiKey: "AIzaSyCnhNtKNvgvP2332dsLp_1SHx7RB0RH9yI",
+          appId: "1:708840805223:web:3566cd157397d6679455c2",
+          messagingSenderId: "708840805223",
+          projectId: "scrum-poker-b2819",
+          authDomain: "scrum-poker-b2819.firebaseapp.com",
+          databaseURL:
+              "https://scrum-poker-b2819-default-rtdb.asia-southeast1.firebasedatabase.app/",
+          measurementId: "G-CH265MWWBG",
+          storageBucket: "scrum-poker-b2819.appspot.com");
+      FirebaseApp scrumPokerApp =
+          await Firebase.initializeApp(options: appOptions);
+      //FirebaseAuth auth = FirebaseAuth.instanceFor(app: scrumPokerApp);
+
+      FirebaseDatabase db = FirebaseDatabase.instanceFor(app: scrumPokerApp);
+      _scrumPokerDB = ScrumPokerFirebase._(db: db);
+    }
+    return _scrumPokerDB!;
+  }
+
+  FirebaseDatabase get realtimeDB => _db!;
   DatabaseReference get dbReference => _db!.ref("sessions");
 
   ///Starts a new scrum session [sessionName]
   ///that is owned [sessionOwnerName] . This owner gets all the control like
   ///starting a new session,replay etc
   /// Returns a unique session id that identifies the session
-  String startNewScrumSession(String sessionName, String sessionOwnerName) {
+  Future<String> startNewScrumSession(
+      String sessionName, String sessionOwnerName) async {
     ScrumSessionParticipant participant = ScrumSessionParticipant(
         sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
     String sessionId = ScrumSession.newID();
-    dbReference.child(sessionId).set({
+    await dbReference.child(sessionId).set({
       "id": sessionId,
       "name": sessionName,
       "startTime": DateTime.now().toUtc().toIso8601String(),
-      "participants": [participant.toJson()],
+      "participants": {
+        {"0": participant.toJson()}
+      },
       "summary": {"totalPoints": 0, "totalStories": 0},
       "stories": [],
       "activeStory": null,
@@ -74,34 +87,47 @@ class ScrumPokerFirebase {
   }
 
   void getScrumSession(String sessionId) async {
-    dbReference.child(sessionId).once("value").then((event) {
-      dynamic jsonData = event.snapshot.toJson();
-      scrumSession = ScrumSession.fromJson(jsonData);
-      if (this.activeParticipant == null) {
-        this.activeParticipant = getExistingActiveParticipant(sessionId);
-      }
-      scrumSession!.activeParticipant = this.activeParticipant;
-      this.activeParticipantkey =
-          getParticipantKey(activeParticipant, jsonData["participants"]);
-      scrumSession!.activeParticipantKey = this.activeParticipantkey;
-      this.sessionInitializationCallback(scrumSession);
-    });
+    DatabaseEvent event =
+        await dbReference.child(sessionId).once(DatabaseEventType.value);
+
+    Map<String, dynamic>? sessionData =
+        event.snapshot.value as Map<String, dynamic>?;
+    scrumSession = ScrumSession.fromJson(sessionData);
+    if (this.activeParticipant == null) {
+      this.activeParticipant = getExistingActiveParticipant(sessionId);
+    }
+    scrumSession!.activeParticipant = this.activeParticipant;
+    this.activeParticipantkey =
+        getParticipantKey(activeParticipant, sessionData!["participants"]);
+    scrumSession!.activeParticipantKey = this.activeParticipantkey;
+    this.sessionInitializationCallback(scrumSession);
+    // dbReference.child(sessionId).once(DatabaseEventType.value).then((event) {
+    //   dynamic jsonData = event.snapshot.toJson();
+    //   scrumSession = ScrumSession.fromJson(jsonData);
+    //   if (this.activeParticipant == null) {
+    //     this.activeParticipant = getExistingActiveParticipant(sessionId);
+    //   }
+    //   scrumSession!.activeParticipant = this.activeParticipant;
+    //   this.activeParticipantkey =
+    //       getParticipantKey(activeParticipant, jsonData["participants"]);
+    //   scrumSession!.activeParticipantKey = this.activeParticipantkey;
+    //   this.sessionInitializationCallback(scrumSession);
+    // });
   }
 
-  void joinScrumSession(
+  Future<void> joinScrumSession(
       {required String sessionId,
       required String participantName,
-      bool owner: false}) {
+      bool owner: false}) async {
     ScrumSessionParticipant? participant =
         getExistingActiveParticipant(sessionId);
     if (participant == null) {
       //no active participant stored for this session in shared preferences
       participant = ScrumSessionParticipant(
           participantName, owner, ScrumSessionParticipant.newID(), null);
-      dbReference
-          .child(sessionId)
-          .child("participants")
-          .push(participant.toJson());
+      DatabaseReference partcipantRef =
+          dbReference.child(sessionId).child("participants").push();
+      await partcipantRef.set(participant.toJson());
       this.activeParticipant = participant;
       saveActiveParticipant(sessionId, participant);
     }
@@ -114,7 +140,7 @@ class ScrumPokerFirebase {
         .onChildAdded
         .listen((data) {
       ScrumSessionParticipant participant =
-          ScrumSessionParticipant.fromJSON(data.snapshot.toJson());
+          ScrumSessionParticipant.fromJSON(data.snapshot.value);
       //invoke the callback
       participantAddedCallback(participant);
     });
@@ -127,7 +153,7 @@ class ScrumPokerFirebase {
         .onChildRemoved
         .listen((data) {
       ScrumSessionParticipant participant =
-          ScrumSessionParticipant.fromJSON(data.snapshot.toJson());
+          ScrumSessionParticipant.fromJSON(data.snapshot.value);
       //invoke the callback
       participantRemovedCallback(participant);
     });
@@ -139,7 +165,7 @@ class ScrumPokerFirebase {
         .child("activeStory/detail")
         .onValue
         .listen((data) {
-      dynamic storyJsonMap = data.snapshot.toJson();
+      dynamic storyJsonMap = data.snapshot.value;
       Story newStory = Story.fromJSON(storyJsonMap);
       if (newStorySetCallback != null) {
         newStorySetCallback(newStory);
@@ -166,7 +192,7 @@ class ScrumPokerFirebase {
         .listen((data) {
       var participantEstimates = data.snapshot;
       if (callback != null) {
-        callback(participantEstimates.toJson());
+        callback(participantEstimates.value);
       }
     });
   }
@@ -191,9 +217,9 @@ class ScrumPokerFirebase {
 
   void onShowCard(dynamic callback) {
     dbReference.child("${scrumSession!.id}/showCards").onValue.listen((data) {
-      var value = data.snapshot;
+      var snapshot = data.snapshot;
       if (callback != null) {
-        callback(value.val());
+        callback(snapshot.value);
       }
     });
   }
@@ -245,6 +271,7 @@ void saveActiveParticipant(
   String participantJSON = participant.toJson().toString();
   preferences?.setString(PreferenceKeys.CURRENT_SESSION, sessionId);
   preferences?.setString(PreferenceKeys.ACTIVE_PARTICIPANT, participantJSON);
+  print("Active participant saved...");
 }
 
 //HACK FUNCTION, NOT SURE WHY FIREBASE IS RETURNING STRING INSTEAD OF JSON NEED TO DEBUG THAT
