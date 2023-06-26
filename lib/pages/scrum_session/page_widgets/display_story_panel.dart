@@ -121,6 +121,7 @@ Widget? getStoryBoard(BuildContext context, Story? story) {
               ],
             )).paddingAll(16.0));
   }
+  return null;
 }
 
 String getJoinUrl(ScrumSession? session) {

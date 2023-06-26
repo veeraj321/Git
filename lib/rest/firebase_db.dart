@@ -261,6 +261,7 @@ ScrumSessionParticipant? getExistingActiveParticipant(String sessionId) {
       return null;
     }
   }
+  return null;
 }
 
 /// saves  [ScrumSessionParticipant] from shared preferences so it can be
