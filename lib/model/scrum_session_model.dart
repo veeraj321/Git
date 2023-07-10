@@ -20,6 +20,7 @@ class ScrumSession {
     this.name = name;
     this.startTime = startTime;
   }
+  
 
   ScrumSession.fromJson(dynamic json) {
     id = json['id'];

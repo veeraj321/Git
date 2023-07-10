@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
@@ -8,6 +9,37 @@ import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.da
 import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
+//import 'dart:html';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:html' as html;
+
+//html.Element? appElement; // Reference to your app element
+
+void main() {}
+
+bool isHostExiting(html.Event event) {
+  // Customize this logic based on your app's requirements
+  // For example, you can check for specific conditions or permissions
+  // to determine if the host is leaving the page directly
+  return true; // Replace with your own condition
+}
+
+void showToastMessage() {
+  // Replace with your own toast implementation or package
+
+  Fluttertoast.showToast(
+    msg: "Host has exited",
+    toastLength:
+        Toast.LENGTH_SHORT, // Duration for which the toast should be visible
+    gravity: ToastGravity.CENTER, // Position of the toast message on the screen
+    timeInSecForIosWeb:
+        30, // Specific to iOS/web platforms, the duration for which the toast should be visible
+    backgroundColor: Colors.black87, // Background color of the toast message
+    textColor: Colors.white, // Text color of the toast message
+    fontSize: 16.0, // Font size of the toast message
+  );
+  //print("Host has exited");
+}
 
 ///✓
 class ScrumSessionPage extends StatefulWidget {
@@ -26,6 +58,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool showNewStoryInput = false;
   bool showCards = false;
   bool resetParticipantScrumCards = false;
+  bool exitPage = false;
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
@@ -42,7 +75,44 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
+    onSessionExit();
+    //appElement =
+    // html.querySelector('#app'); // Replace 'app' with your app element ID
+
     //set callbacks into the session
+  }
+
+  void onSessionExit() {
+    // window.onBeforeUnload.listen((event) {
+    //   // Code to execute when the browser is closed or navigated away
+    //   //delete the scrum session with the current id in firebase
+    //   //display msg to user that the session expired
+    //   //go back to previous page
+    //   //ExitSession(deleteSessionFromFirebase);
+    //   //setState(() {
+    //   //print(scrumSession!.participants);
+    //   // exitPage = true;
+
+    //   //scrumSession!.participants.clear();
+    //   //print('set state exe');
+    //   //print(scrumSession!.participants);
+    //   //});
+
+    //   print('Browser is closing or navigating away!');
+    // });
+    html.window.onBeforeUnload.listen((html.Event event) {
+      // Check if the host is leaving the page
+
+      if (isHostExiting(event)) {
+        // Show toast message to other participants
+
+        setState(() {
+          print('set state');
+          exitPage = true;
+          //showToastMessage();
+        });
+      }
+    });
   }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
@@ -126,16 +196,21 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   @override
   Widget build(BuildContext context) {
+    //onSessionExit();
     return Material(
-        child: AnimatedContainer(
-            duration: Duration(microseconds: 300),
-            color: Theme.of(context).scaffoldBackgroundColor,
-            child: buildScrumSessionPage(context)));
+      child: AnimatedContainer(
+        duration: Duration(microseconds: 300),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: (exitPage == false)
+            ? buildScrumSessionPage(context)
+            : ToastWidget(message: "Host exited the session"),
+      ),
+    );
   }
 
   Widget buildScrumSessionPage(BuildContext context) {
     return Column(children: [
-      pageHeader(context),
+      pageHeader(context, scrumSession, scrumSession?.activeParticipant),
       ((this.showNewStoryInput == false)
           ? buildDisplayStoryPanel(
               context,
@@ -161,6 +236,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   Widget buildParticipantsPanel(BuildContext context, showEstimates) {
+    //print(" --In build of ParticipantPanel ${scrumSession!.participants}");
     return Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: scrumSession?.participants

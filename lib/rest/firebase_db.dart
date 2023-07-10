@@ -7,6 +7,7 @@ import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/model/story_participant_estimate.dart';
 import 'package:scrum_poker/store/shared_preference.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 /*
   Singleton class to deal with connection to firebase
  */
@@ -52,6 +53,8 @@ class ScrumPokerFirebase {
 
   FirebaseDatabase get realtimeDB => _db!;
   DatabaseReference get dbReference => _db!.ref("sessions");
+
+  get firebase => null;
 
   ///Starts a new scrum session [sessionName]
   ///that is owned [sessionOwnerName] . This owner gets all the control like
@@ -118,7 +121,7 @@ class ScrumPokerFirebase {
   Future<void> joinScrumSession(
       {required String sessionId,
       required String participantName,
-      bool owner: false}) async {
+      bool owner = false}) async {
     ScrumSessionParticipant? participant =
         getExistingActiveParticipant(sessionId);
     if (participant == null) {
@@ -197,6 +200,20 @@ class ScrumPokerFirebase {
     });
   }
 
+  // Future<void> deleteInstance() async {
+  //   try {
+  //     // Get a reference to the database instance you want to delete
+  //     DatabaseReference databaseRef =
+  //         firebase.database().ref("your-instance-path");
+
+  //     // Remove the instance from the database
+  //     await databaseRef.remove();
+  //   } catch (error) {
+  //     // Handle any errors that occur during the deletion process
+  //     print("Error deleting instance: $error");
+  //   }
+  // }
+
   void setActiveStory(id, title, description) {
     Story newStory = Story(id, title, description, []);
     dbReference
@@ -237,6 +254,18 @@ class ScrumPokerFirebase {
       }
     }
     return participantkey;
+  }
+
+  Future<void> removeFromExistingSession() async {
+    removeAllDataFromSharedPreferences();
+    print("Inside removeFromExistingSession");
+    print(preferences?.getString(PreferenceKeys.CURRENT_SESSION));
+    await dbReference.child(scrumSession!.id!).remove();
+  }
+
+  void removeAllDataFromSharedPreferences() async {
+    print("Inside removeALldata");
+    await preferences?.clear();
   }
 }
 
@@ -289,3 +318,8 @@ void saveActiveParticipant(
 //   });
 //   return jsonMap;
 // }
+//Future<void> removeExistingSession() async {}
+
+
+
+
