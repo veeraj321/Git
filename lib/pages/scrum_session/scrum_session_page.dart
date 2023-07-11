@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scrum_poker/ExitSession/exit.dart';
+//import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
@@ -11,6 +11,7 @@ import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.da
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 //import 'dart:html';
 import 'package:fluttertoast/fluttertoast.dart';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
 //html.Element? appElement; // Reference to your app element
@@ -201,9 +202,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       child: AnimatedContainer(
         duration: Duration(microseconds: 300),
         color: Theme.of(context).scaffoldBackgroundColor,
-        child: (exitPage == false)
-            ? buildScrumSessionPage(context)
-            : ToastWidget(message: "Host exited the session"),
+        child: buildScrumSessionPage(context),
       ),
     );
   }

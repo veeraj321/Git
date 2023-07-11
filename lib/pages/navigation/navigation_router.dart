@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/pages/join_session_with_link/join_session_with_link.dart';
 import 'package:scrum_poker/pages/navigation/navigation_util.dart';
 import 'package:scrum_poker/pages/navigation/router_config.dart';
@@ -10,9 +11,15 @@ import '../page_not_found/page_not_found.dart';
 var routerMap = {
   "/": (routerDelegate, pathParameters, queryParameters) =>
       LandingPage(routerDelegate: routerDelegate, onTap: () {}),
-  "/join/:sessionId":(routerDelegate,pathParameter,queryParameters)=>JoinSessionFromLink(id:pathParameter["sessionId"],routerDelegate: routerDelegate),
-  "/home/:sessionId": (routerDelegate, pathParameters, queryParameters)=>ScrumSessionPage(id: pathParameters["sessionId"]),
-  "/not-found": (routerDelegate, pathParameters, queryParameters) => PageNotFound(),
+  "/join/:sessionId": (routerDelegate, pathParameter, queryParameters) =>
+      JoinSessionFromLink(
+          id: pathParameter["sessionId"], routerDelegate: routerDelegate),
+  "/home/:sessionId": (routerDelegate, pathParameters, queryParameters) =>
+      ScrumSessionPage(id: pathParameters["sessionId"]),
+  "/not-found": (routerDelegate, pathParameters, queryParameters) =>
+      PageNotFound(),
+  "/session-ended": (routerDelegate, pathParameters, queryParameters) =>
+      ExitPage()
 };
 
 ///AppRoutePath is the state variable that holds the active Route and active Page
@@ -45,7 +52,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   Widget build(BuildContext context) {
     print("Router Delegate: build called ${routeConfig.route}");
     // if (activePage == null) {
-      this.activePage = this.routeConfig.getPage(this);
+    this.activePage = this.routeConfig.getPage(this);
     // }
     var page = MaterialPage(
         child: this.activePage!, key: ValueKey(activePage.toString()));

@@ -20,7 +20,6 @@ class ScrumSession {
     this.name = name;
     this.startTime = startTime;
   }
-  
 
   ScrumSession.fromJson(dynamic json) {
     id = json['id'];
@@ -63,7 +62,20 @@ class ScrumSession {
     String id = Uuid().v1().toString();
     return id;
   }
+
+  void Leavepage() {
+    for (var i = 0; i < participants.length; i++) {
+      if (activeParticipant!.id == participants[i].id) {
+        print("ok");
+      } else {
+        print("get lost");
+      }
+    }
+  }
 }
+
+
+
 
 
 
