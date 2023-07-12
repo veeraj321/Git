@@ -127,6 +127,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         spfb.onStoryEstimateChanged(onStoryEstimatesChanged);
         spfb.onShowCard(onShowCardsEventTriggered);
         spfb.onEndSession(sessionExit);
+        spfb.onNewParticipantRemoved(onNewParticipantRemoved);
       });
     });
   }
@@ -139,6 +140,12 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void onNewParticipantAdded(newParticipant) {
     setState(() {
       this.scrumSession?.addParticipant(newParticipant);
+    });
+  }
+
+  void onNewParticipantRemoved(oldParticipant) {
+    setState(() {
+      this.scrumSession?.removeParticipant(oldParticipant);
     });
   }
 
