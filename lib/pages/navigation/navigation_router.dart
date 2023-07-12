@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scrum_poker/ExitSession/exit.dart';
+import 'package:scrum_poker/pages/ExitSession/exit.dart';
 import 'package:scrum_poker/pages/join_session_with_link/join_session_with_link.dart';
 import 'package:scrum_poker/pages/navigation/navigation_util.dart';
 import 'package:scrum_poker/pages/navigation/router_config.dart';
