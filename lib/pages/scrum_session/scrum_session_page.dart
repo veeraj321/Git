@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
-import 'package:scrum_poker/model/scrum_session_participant_model.dart';
+//import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
