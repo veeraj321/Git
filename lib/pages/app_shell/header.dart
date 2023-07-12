@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
+import 'package:scrum_poker/rest/firebase_db.dart';
 //import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
@@ -119,15 +120,26 @@ class _CancelButtonState extends State<CancelButton> {
   }
 
   void onPressDecision() {
-    (textCheck)
-        ? deleteSession(widget.session?.id)
-        : widget.session?.Leavepage();
+    setState(() {
+      print("ok");
+      (textCheck)
+          ? securityPage(str: widget.session?.id)
+          : widget.session?.Leavepage();
+    });
+  }
+
+  void initialiseScrumSession() async {
+    ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+    spfb.removeFromExistingSession();
   }
 
   // onEndSessionClicked() {
   @override
   Widget build(BuildContext context) {
     return pillButton(
-        context: context, text: returnText(), onPress: onPressDecision);
+      context: context,
+      text: returnText(),
+      onPress: initialiseScrumSession,
+    );
   }
 }

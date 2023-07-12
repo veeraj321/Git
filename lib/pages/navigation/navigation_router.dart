@@ -15,7 +15,10 @@ var routerMap = {
       JoinSessionFromLink(
           id: pathParameter["sessionId"], routerDelegate: routerDelegate),
   "/home/:sessionId": (routerDelegate, pathParameters, queryParameters) =>
-      ScrumSessionPage(id: pathParameters["sessionId"]),
+      ScrumSessionPage(
+        id: pathParameters["sessionId"],
+        routerDelegate: routerDelegate,
+      ),
   "/not-found": (routerDelegate, pathParameters, queryParameters) =>
       PageNotFound(),
   "/session-ended": (routerDelegate, pathParameters, queryParameters) =>

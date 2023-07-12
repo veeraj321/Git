@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
+import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/create_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.dart';
@@ -45,8 +46,10 @@ void showToastMessage() {
 ///✓
 class ScrumSessionPage extends StatefulWidget {
   final String id;
+  final AppRouterDelegate? routerDelegate;
 
-  ScrumSessionPage({Key? key, required this.id}) : super(key: key);
+  ScrumSessionPage({Key? key, required this.id, this.routerDelegate})
+      : super(key: key);
 
   @override
   _ScrumSessionPageState createState() => _ScrumSessionPageState(id);
@@ -56,6 +59,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   String? sessionId;
   ScrumSession? scrumSession;
   Story? activeStory;
+  AppRouterDelegate? routerDelegater;
   bool showNewStoryInput = false;
   bool showCards = false;
   bool resetParticipantScrumCards = false;
@@ -76,45 +80,43 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
-    onSessionExit();
+    //onSessionExit();
     //appElement =
     // html.querySelector('#app'); // Replace 'app' with your app element ID
 
     //set callbacks into the session
   }
 
-  void onSessionExit() {
-    // window.onBeforeUnload.listen((event) {
-    //   // Code to execute when the browser is closed or navigated away
-    //   //delete the scrum session with the current id in firebase
-    //   //display msg to user that the session expired
-    //   //go back to previous page
-    //   //ExitSession(deleteSessionFromFirebase);
-    //   //setState(() {
-    //   //print(scrumSession!.participants);
-    //   // exitPage = true;
+  // void onSessionExit() {
+  //   // window.onBeforeUnload.listen((event) {
+  //   //   // Code to execute when the browser is closed or navigated away
+  //   //   //delete the scrum session with the current id in firebase
+  //   //   //display msg to user that the session expired
+  //   //   //go back to previous page
+  //   //   //ExitSession(deleteSessionFromFirebase);
+  //   //   //setState(() {
+  //   //   //print(scrumSession!.participants);
+  //   //   // exitPage = true;
 
-    //   //scrumSession!.participants.clear();
-    //   //print('set state exe');
-    //   //print(scrumSession!.participants);
-    //   //});
+  //   //   //scrumSession!.participants.clear();
+  //   //   //print('set state exe');
+  //   //   //print(scrumSession!.participants);
+  //   //   //});
 
-    //   print('Browser is closing or navigating away!');
-    // });
-    html.window.onBeforeUnload.listen((html.Event event) {
-      // Check if the host is leaving the page
+  //   //   print('Browser is closing or navigating away!');
+  //   // });
+  //   html.window.onBeforeUnload.listen((html.Event event) {
+  //     // Check if the host is leaving the page
 
-      if (isHostExiting(event)) {
-        // Show toast message to other participants
-
-        setState(() {
-          print('set state');
-          exitPage = true;
-          //showToastMessage();
-        });
-      }
-    });
-  }
+  //     if (isHostExiting(event)) {
+  //       setState(() {
+  //         print('set state');
+  //         exitPage = true;
+  //         //showToastMessage();
+  //       });
+  //     }
+  //   });
+  // }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
     setState(() {
@@ -124,6 +126,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         spfb.onNewStorySet(onNewStorySet);
         spfb.onStoryEstimateChanged(onStoryEstimatesChanged);
         spfb.onShowCard(onShowCardsEventTriggered);
+        spfb.onEndSession(sessionExit);
       });
     });
   }
@@ -137,6 +140,10 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     setState(() {
       this.scrumSession?.addParticipant(newParticipant);
     });
+  }
+
+  void sessionExit() {
+    widget.routerDelegate!.pushRoute("/session-ended");
   }
 
   void onNewStorySet(story) {

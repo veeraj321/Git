@@ -256,16 +256,43 @@ class ScrumPokerFirebase {
     return participantkey;
   }
 
-  Future<void> removeFromExistingSession() async {
-    removeAllDataFromSharedPreferences();
+  // Future<void> removeFromExistingSession() async {
+  //   removeAllDataFromSharedPreferences();
+  //   print("Inside removeFromExistingSession");
+  //   print(preferences?.getString(PreferenceKeys.CURRENT_SESSION));
+  //   await dbReference.child(scrumSession!.id!).remove();
+  // }
+
+  // void removeAllDataFromSharedPreferences() async {
+  //   print("Inside removeALldata");
+  //   await preferences?.clear();
+  // }
+
+  void removeFromExistingSession() async {
+    // removeAllDataFromSharedPreferences();
     print("Inside removeFromExistingSession");
-    print(preferences?.getString(PreferenceKeys.CURRENT_SESSION));
-    await dbReference.child(scrumSession!.id!).remove();
+
+    // String participantKey = await getParticipantKey(
+    //     scrumSession!.activeParticipant, scrumSession!.participants);
+    // print("before removal  $participantKey");
+
+    if (scrumSession!.activeParticipant!.isOwner) {
+      await dbReference.child(scrumSession!.id!).remove();
+    } else {
+      // await dbReference
+      //     .child(scrumSession!.id!)
+      //     .child("participants")
+      //     .child(participantKey)
+      //     .remove();
+    }
   }
 
-  void removeAllDataFromSharedPreferences() async {
-    print("Inside removeALldata");
-    await preferences?.clear();
+  void onEndSession(dynamic callback) {
+    dbReference.onChildRemoved.listen((event) {
+      // routing to end page
+      print("listener${event.snapshot.value}");
+      callback();
+    });
   }
 }
 
