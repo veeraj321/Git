@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
+import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
 import 'package:scrum_poker/pages/navigation/navigation_router.dart';
@@ -147,6 +148,14 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     setState(() {
       this.scrumSession?.removeParticipant(oldParticipant);
     });
+    print(oldParticipant);
+    // ScrumSessionParticipant sp = oldParticipant;
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     duration: const Duration(seconds: 3),
+    //     content: Text("${oldParticipant.name}"),
+    //   ),
+    // );
   }
 
   void sessionExit() {

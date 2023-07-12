@@ -49,7 +49,10 @@ class ScrumSession {
 
   void removeParticipant(ScrumSessionParticipant participant) {
     //  bool found = false;
-    this.participants.removeWhere((element) => (element.id) == participant.id);
+    this.participants.remove(this
+        .participants
+        .firstWhere((element) => (element.id) == participant.id));
+    //this.participants.removeWhere((element) => (element.id) == participant.id);
   }
 
   Map<String, dynamic> toJson() => {
