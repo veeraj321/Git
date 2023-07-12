@@ -12,7 +12,6 @@ import 'package:scrum_poker/pages/scrum_session/page_widgets/display_story_panel
 //import '../../model/scrum_session_participant_model.dart';
 
 import '../../model/scrum_session_participant_model.dart';
-import '../../security/security.dart';
 
 // class pageHeader extends StatefulWidget {
 //   final String se
@@ -117,15 +116,6 @@ class _CancelButtonState extends State<CancelButton> {
       textCheck = false;
       return "LEAVE SESSION";
     }
-  }
-
-  void onPressDecision() {
-    setState(() {
-      print("ok");
-      (textCheck)
-          ? securityPage(str: widget.session?.id)
-          : widget.session?.Leavepage();
-    });
   }
 
   void initialiseScrumSession() async {
