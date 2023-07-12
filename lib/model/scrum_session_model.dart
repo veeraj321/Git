@@ -1,3 +1,7 @@
+import 'dart:js';
+
+import 'package:flutter/material.dart';
+//import 'package:scrum_poker/main.dart';
 import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/scrum_session_summary_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
@@ -52,6 +56,16 @@ class ScrumSession {
     this.participants.remove(this
         .participants
         .firstWhere((element) => (element.id) == participant.id));
+    print("_______________________________-");
+    ScaffoldMessenger.of(context as BuildContext).showSnackBar(SnackBar(
+        duration: const Duration(seconds: 3),
+        content: Text("${participant.name} left the session"),
+        action: SnackBarAction(
+          label: 'DISMISS',
+          onPressed: () {
+            // Some code to undo the change.
+          },
+        )));
     //this.participants.removeWhere((element) => (element.id) == participant.id);
   }
 
