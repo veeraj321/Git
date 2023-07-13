@@ -86,6 +86,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         print('Internet connection lost');
         // Perform necessary actions, like saving data or showing a message to the user
       } else {
+        print("Hello");
         // Handle other cases, such as closing the tab
       }
     });
