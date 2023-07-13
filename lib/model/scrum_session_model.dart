@@ -50,6 +50,7 @@ class ScrumSession {
 
   void removeParticipant(ScrumSessionParticipant participant) {
     //  bool found = false;
+    if (this.participants.length == 1) {}
     this.participants.remove(this
         .participants
         .firstWhere((element) => (element.id) == participant.id));

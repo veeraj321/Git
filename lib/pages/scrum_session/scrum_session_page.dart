@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
+import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 //import 'package:scrum_poker/model/scrum_session_participant_model.dart';
 import 'package:scrum_poker/model/story_model.dart';
 import 'package:scrum_poker/pages/app_shell/header.dart';
@@ -25,9 +26,10 @@ void showToastMessage() {
     msg: "Host has exited",
     toastLength:
         Toast.LENGTH_SHORT, // Duration for which the toast should be visible
-    gravity: ToastGravity.CENTER, // Position of the toast message on the screen
+    gravity: ToastGravity
+        .BOTTOM_RIGHT, // Position of the toast message on the screen
     timeInSecForIosWeb:
-        30, // Specific to iOS/web platforms, the duration for which the toast should be visible
+        5, // Specific to iOS/web platforms, the duration for which the toast should be visible
     backgroundColor: Colors.black87, // Background color of the toast message
     textColor: Colors.white, // Text color of the toast message
     fontSize: 16.0, // Font size of the toast message
@@ -56,6 +58,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   bool showCards = false;
   bool resetParticipantScrumCards = false;
   bool exitPage = false;
+  final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   _ScrumSessionPageState(String id) {
     this.sessionId = id;
@@ -72,15 +75,17 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
-    onSessionExit();
+    browserEventListeners();
     //appElement =
     // html.querySelector('#app'); // Replace 'app' with your app element ID
 
     //set callbacks into the session
   }
 
-  void onSessionExit() {
+  void browserEventListeners() {
     window.onBeforeUnload.listen((event) {
+      print("_____________________________");
+      print(event.type);
       if (event.type == 'offline') {
         // Internet issue occurred, handle it here
         print('Internet connection lost');
@@ -89,6 +94,11 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         print("Hello");
         // Handle other cases, such as closing the tab
       }
+    });
+    window.onOnline.listen((Event event) {
+      // Internet connection is regained, handle it here
+      print('Internet connection restored');
+      // Retrieve the locally saved data and perform necessary actions
     });
   }
 
@@ -123,6 +133,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
     setState(() {
       this.scrumSession?.removeParticipant(oldParticipant);
+      showSnackbar(oldParticipant);
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       //     duration: const Duration(seconds: 3),
@@ -210,10 +221,15 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   Widget build(BuildContext context) {
     //onSessionExit();
     return Material(
-      child: AnimatedContainer(
-        duration: Duration(microseconds: 300),
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: buildScrumSessionPage(context),
+      child: ScaffoldMessenger(
+        key: scaffoldMessengerKey,
+        child: Scaffold(
+          body: AnimatedContainer(
+            duration: Duration(microseconds: 300),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: buildScrumSessionPage(context),
+          ),
+        ),
       ),
     );
   }
@@ -254,5 +270,22 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
                     participantCard(context, participant, showEstimates))
                 .toList() ??
             []);
+  }
+
+  void showSnackbar(ScrumSessionParticipant oldParticipant) {
+    scaffoldMessengerKey.currentState!.showSnackBar(
+      SnackBar(
+        content: Text('${oldParticipant.name} left the session'),
+        duration: Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {
+            // Perform an action when the Snackbar action button is pressed
+            // For example, you can dismiss the Snackbar
+            scaffoldMessengerKey.currentState!.hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
   }
 }

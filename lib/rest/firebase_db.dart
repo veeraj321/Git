@@ -313,11 +313,15 @@ class ScrumPokerFirebase {
     Map<String, dynamic>? removeSessionData =
         event.snapshot.value as Map<String, dynamic>?;
 
-    if (scrumSession!.activeParticipant!.isOwner) {
+    if (scrumSession!.activeParticipant!.isOwner ||
+        (scrumSession!.participants.length == 1 &&
+            scrumSession!.activeParticipant!.isOwner == false)) {
       await dbReference.child(scrumSession!.id!).remove();
     } else {
+      print("______________________________");
+      print(removeSessionData!["participants"]);
       var participantKey = getParticipantKey(
-          activeParticipant, removeSessionData!["participants"]);
+          activeParticipant, removeSessionData["participants"]);
       await dbReference
           .child(scrumSession!.id!)
           .child("participants")
