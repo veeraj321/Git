@@ -11,21 +11,12 @@ import 'package:scrum_poker/pages/scrum_session/page_widgets/scrum_cards_list.da
 import 'package:scrum_poker/rest/firebase_db.dart';
 import 'package:scrum_poker/pages/scrum_session/page_widgets/participant_card.dart';
 import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
-//import 'dart:html';
+import 'dart:html';
 import 'package:fluttertoast/fluttertoast.dart';
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+//import 'dart:html' as html;
 
 //html.Element? appElement; // Reference to your app element
-
-void main() {}
-
-bool isHostExiting(html.Event event) {
-  // Customize this logic based on your app's requirements
-  // For example, you can check for specific conditions or permissions
-  // to determine if the host is leaving the page directly
-  return true; // Replace with your own condition
-}
 
 void showToastMessage() {
   // Replace with your own toast implementation or package
@@ -81,43 +72,24 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   void initState() {
     super.initState();
     initializeScrumSession();
-    //onSessionExit();
+    onSessionExit();
     //appElement =
     // html.querySelector('#app'); // Replace 'app' with your app element ID
 
     //set callbacks into the session
   }
 
-  // void onSessionExit() {
-  //   // window.onBeforeUnload.listen((event) {
-  //   //   // Code to execute when the browser is closed or navigated away
-  //   //   //delete the scrum session with the current id in firebase
-  //   //   //display msg to user that the session expired
-  //   //   //go back to previous page
-  //   //   //ExitSession(deleteSessionFromFirebase);
-  //   //   //setState(() {
-  //   //   //print(scrumSession!.participants);
-  //   //   // exitPage = true;
-
-  //   //   //scrumSession!.participants.clear();
-  //   //   //print('set state exe');
-  //   //   //print(scrumSession!.participants);
-  //   //   //});
-
-  //   //   print('Browser is closing or navigating away!');
-  //   // });
-  //   html.window.onBeforeUnload.listen((html.Event event) {
-  //     // Check if the host is leaving the page
-
-  //     if (isHostExiting(event)) {
-  //       setState(() {
-  //         print('set state');
-  //         exitPage = true;
-  //         //showToastMessage();
-  //       });
-  //     }
-  //   });
-  // }
+  void onSessionExit() {
+    window.onBeforeUnload.listen((event) {
+      if (event.type == 'offline') {
+        // Internet issue occurred, handle it here
+        print('Internet connection lost');
+        // Perform necessary actions, like saving data or showing a message to the user
+      } else {
+        // Handle other cases, such as closing the tab
+      }
+    });
+  }
 
   void scrumSessionInitializationSuccessful(scrumSession) {
     setState(() {
@@ -145,8 +117,23 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void onNewParticipantRemoved(oldParticipant) {
+    // print(
+    //     "_______________________________----------------____________________-");
+
     setState(() {
       this.scrumSession?.removeParticipant(oldParticipant);
+
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      //     duration: const Duration(seconds: 3),
+      //     content: Text("${oldParticipant.name} left the session"),
+      //     action: SnackBarAction(
+      //       label: 'DISMISS',
+      //       onPressed: () {
+      //         // Some code to undo the change.
+      //       },
+      //     )));
+      // print(
+      //     "_______________________________----------------____________________-");
     });
     print(oldParticipant);
     // ScrumSessionParticipant sp = oldParticipant;

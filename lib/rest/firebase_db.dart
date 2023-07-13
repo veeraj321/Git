@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
@@ -15,6 +16,7 @@ import 'package:scrum_poker/store/shared_preference.dart';
 class ScrumPokerFirebase {
   static ScrumPokerFirebase? _scrumPokerDB;
   FirebaseDatabase? _db;
+  FirebaseAuth? _auth;
   ScrumSession? scrumSession;
   //callback method to be called when the session is initialized
   dynamic sessionInitializationCallback;
@@ -25,34 +27,59 @@ class ScrumPokerFirebase {
   String? activeParticipantkey = "0";
 
   //static late final ScrumPokerFirebase instance = ScrumPokerFirebase._();
-  ScrumPokerFirebase._({required FirebaseDatabase db}) {
+  ScrumPokerFirebase._(
+      {required FirebaseDatabase db, required FirebaseAuth auth}) {
     _db = db;
+    _auth = auth;
   }
 
   static Future<ScrumPokerFirebase> get instance async {
     if (_scrumPokerDB == null) {
       FirebaseOptions appOptions = FirebaseOptions(
-          apiKey: "AIzaSyCnhNtKNvgvP2332dsLp_1SHx7RB0RH9yI",
-          appId: "1:708840805223:web:3566cd157397d6679455c2",
-          messagingSenderId: "708840805223",
-          projectId: "scrum-poker-b2819",
-          authDomain: "scrum-poker-b2819.firebaseapp.com",
+          apiKey: "AIzaSyCJTcgku4Cyg62svj_kCM8e1BPDlD8WPsE",
+          appId: "1:315539366379:web:db33c5c6554e5c6fbcb9ae",
+          messagingSenderId: "315539366379",
+          projectId: "scrum-poker-devdb",
+          authDomain: "scrum-poker-devdb.firebaseapp.com",
           databaseURL:
-              "https://scrum-poker-b2819-default-rtdb.asia-southeast1.firebasedatabase.app/",
-          measurementId: "G-CH265MWWBG",
-          storageBucket: "scrum-poker-b2819.appspot.com");
+              "https://scrum-poker-devdb-default-rtdb.asia-southeast1.firebasedatabase.app/",
+          // measurementId: "G-CH265MWWBG",
+          storageBucket: "scrum-poker-devdb.appspot.com");
       FirebaseApp scrumPokerApp =
           await Firebase.initializeApp(options: appOptions);
-      //FirebaseAuth auth = FirebaseAuth.instanceFor(app: scrumPokerApp);
+      FirebaseAuth auth = FirebaseAuth.instanceFor(app: scrumPokerApp);
 
       FirebaseDatabase db = FirebaseDatabase.instanceFor(app: scrumPokerApp);
-      _scrumPokerDB = ScrumPokerFirebase._(db: db);
+      _scrumPokerDB = ScrumPokerFirebase._(db: db, auth: auth);
     }
     return _scrumPokerDB!;
   }
 
+  // static Future<ScrumPokerFirebase> get instance async {
+  //   if (_scrumPokerDB == null) {
+  //     FirebaseOptions appOptions = FirebaseOptions(
+  //         apiKey: "AIzaSyCnhNtKNvgvP2332dsLp_1SHx7RB0RH9yI",
+  //         appId: "1:708840805223:web:3566cd157397d6679455c2",
+  //         messagingSenderId: "708840805223",
+  //         projectId: "scrum-poker-b2819",
+  //         authDomain: "scrum-poker-b2819.firebaseapp.com",
+  //         databaseURL:
+  //             "https://scrum-poker-b2819-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  //         measurementId: "G-CH265MWWBG",
+  //         storageBucket: "scrum-poker-b2819.appspot.com");
+  //     FirebaseApp scrumPokerApp =
+  //         await Firebase.initializeApp(options: appOptions);
+  //     //FirebaseAuth auth = FirebaseAuth.instanceFor(app: scrumPokerApp);
+
+  //     FirebaseDatabase db = FirebaseDatabase.instanceFor(app: scrumPokerApp);
+  //     _scrumPokerDB = ScrumPokerFirebase._(db: db);
+  //   }
+  //   return _scrumPokerDB!;
+  // }
+
   FirebaseDatabase get realtimeDB => _db!;
   DatabaseReference get dbReference => _db!.ref("sessions");
+  FirebaseAuth get authenticate => _auth!;
 
   get firebase => null;
 
@@ -64,6 +91,8 @@ class ScrumPokerFirebase {
       String sessionName, String sessionOwnerName) async {
     ScrumSessionParticipant participant = ScrumSessionParticipant(
         sessionOwnerName, true, ScrumSessionParticipant.newID(), null);
+    UserCredential user = await authenticate.signInWithEmailAndPassword(
+        email: "jay@scrumpoker.com", password: "asdfgh");
     String sessionId = ScrumSession.newID();
     await dbReference.child(sessionId).set({
       "id": sessionId,
@@ -90,6 +119,8 @@ class ScrumPokerFirebase {
   }
 
   void getScrumSession(String sessionId) async {
+    UserCredential user = await authenticate.signInWithEmailAndPassword(
+        email: "jay@scrumpoker.com", password: "asdfgh");
     DatabaseEvent event =
         await dbReference.child(sessionId).once(DatabaseEventType.value);
 
