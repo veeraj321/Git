@@ -118,6 +118,10 @@ class ScrumPokerFirebase {
     this.sessionInitializationFailedCallback = failedCallback;
   }
 
+  Future<DataSnapshot> get participants {
+    return dbReference.child(scrumSession!.id!).child("participants").get();
+  }
+
   void getScrumSession(String sessionId) async {
     UserCredential user = await authenticate.signInWithEmailAndPassword(
         email: "jay@scrumpoker.com", password: "asdfgh");

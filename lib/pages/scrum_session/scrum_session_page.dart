@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 //import 'package:scrum_poker/ExitSession/exit.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
@@ -83,22 +84,35 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
   }
 
   void browserEventListeners() {
-    window.onBeforeUnload.listen((event) {
-      print("_____________________________");
-      print(event.type);
-      if (event.type == 'offline') {
-        // Internet issue occurred, handle it here
-        print('Internet connection lost');
-        // Perform necessary actions, like saving data or showing a message to the user
-      } else {
-        print("Hello");
-        // Handle other cases, such as closing the tab
-      }
+    window.onBeforeUnload.listen((event) async {
+      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      spfb.removeFromExistingSession();
     });
-    window.onOnline.listen((Event event) {
+    window.onOffline.listen((event) {
+      print("inside offline");
+      onNewParticipantRemoved(scrumSession!.activeParticipant);
+    });
+    window.onOnline.listen((Event event) async {
       // Internet connection is regained, handle it here
-      print('Internet connection restored');
-      // Retrieve the locally saved data and perform necessary actions
+      // take the participants json from db and update the participants list and setstate
+      ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+      DataSnapshot participantsJson = await spfb.participants;
+
+      Map _participantsListJson = participantsJson.value as Map;
+
+      var listOfParticipants = _participantsListJson.values
+          .map((participant) => ScrumSessionParticipant.fromJSON(participant))
+          .toList();
+
+      print("values = ${participantsJson.value}");
+
+      listOfParticipants.forEach((element) {
+        print("in for each ${element.toJson()}");
+      });
+      print(listOfParticipants);
+      setState(() {
+        scrumSession!.participants = listOfParticipants;
+      });
     });
   }
 
