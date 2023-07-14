@@ -337,7 +337,8 @@ class ScrumPokerFirebase {
   void onEndSession(dynamic callback) {
     dbReference.onChildRemoved.listen((event) {
       // routing to end page
-      print("listener${event.snapshot.value}");
+      print("listener----------------${event.snapshot.value}");
+
       callback();
     });
   }

@@ -124,7 +124,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
         spfb.onNewStorySet(onNewStorySet);
         spfb.onStoryEstimateChanged(onStoryEstimatesChanged);
         spfb.onShowCard(onShowCardsEventTriggered);
-        spfb.onEndSession(sessionExit);
+        spfb.onEndSession(onEndSession);
         spfb.onNewParticipantRemoved(onNewParticipantRemoved);
       });
     });
@@ -171,7 +171,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     // );
   }
 
-  void sessionExit() {
+  void onEndSession() {
     widget.routerDelegate!.pushRoute("/session-ended");
   }
 
