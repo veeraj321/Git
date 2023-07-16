@@ -159,6 +159,7 @@ class ScrumPokerFirebase {
       bool owner = false}) async {
     ScrumSessionParticipant? participant =
         getExistingActiveParticipant(sessionId);
+
     if (participant == null) {
       //no active participant stored for this session in shared preferences
       participant = ScrumSessionParticipant(

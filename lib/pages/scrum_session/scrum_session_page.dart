@@ -90,7 +90,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     });
     window.onOffline.listen((event) {
       print("inside offline");
-      onNewParticipantRemoved(scrumSession!.activeParticipant);
+      onNewParticipantRemoved(scrumSession?.activeParticipant);
     });
     window.onOnline.listen((Event event) async {
       // Internet connection is regained, handle it here
@@ -141,13 +141,18 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     });
   }
 
-  void onNewParticipantRemoved(oldParticipant) {
-    // print(
-    //     "_______________________________----------------____________________-");
+  void onNewParticipantRemoved(ScrumSessionParticipant? oldParticipant) {
+    print(
+        "_______________________________----------------____________________-");
+    // print(scrumSession?.activeParticipant?.name);
+    // print(oldParticipant?.name);
 
+    //if (scrumSession?.activeParticipant == oldParticipant) {
+    // widget.routerDelegate!.popRoute();
+    // } else {
     setState(() {
-      this.scrumSession?.removeParticipant(oldParticipant);
-      showSnackbar(oldParticipant);
+      this.scrumSession?.removeParticipant(oldParticipant!);
+      showSnackbar(oldParticipant!);
 
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       //     duration: const Duration(seconds: 3),
@@ -161,7 +166,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
       // print(
       //     "_______________________________----------------____________________-");
     });
-    print(oldParticipant);
+    //print(oldParticipant);
     // ScrumSessionParticipant sp = oldParticipant;
     // ScaffoldMessenger.of(context).showSnackBar(
     //   SnackBar(
@@ -169,6 +174,7 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
     //     content: Text("${oldParticipant.name}"),
     //   ),
     // );
+    print("________________");
   }
 
   void onEndSession() {
@@ -250,7 +256,8 @@ class _ScrumSessionPageState extends State<ScrumSessionPage> {
 
   Widget buildScrumSessionPage(BuildContext context) {
     return Column(children: [
-      pageHeader(context, scrumSession, scrumSession?.activeParticipant),
+      pageHeader(context, scrumSession, scrumSession?.activeParticipant,
+          widget.routerDelegate),
       ((this.showNewStoryInput == false)
           ? buildDisplayStoryPanel(
               context,

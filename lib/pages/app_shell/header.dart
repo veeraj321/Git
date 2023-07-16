@@ -4,6 +4,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:scrum_poker/model/scrum_session_model.dart';
+import 'package:scrum_poker/pages/navigation/navigation_router.dart';
+//import 'package:scrum_poker/pages/navigation/navigation_router.dart';
 import 'package:scrum_poker/rest/firebase_db.dart';
 //import 'package:scrum_poker/widgets/ui/extensions/widget_extensions.dart';
 import 'package:scrum_poker/widgets/ui/typograpy_widgets.dart';
@@ -50,11 +52,8 @@ import '../../model/scrum_session_participant_model.dart';
 //   );
 //   }
 // }
-Widget pageHeader(
-  BuildContext context,
-  ScrumSession? session,
-  ScrumSessionParticipant? participant,
-) {
+Widget pageHeader(BuildContext context, ScrumSession? session,
+    ScrumSessionParticipant? participant, AppRouterDelegate? routerDelegate) {
   return AppBar(
     actions: [
       //   // IconButton(
@@ -64,7 +63,7 @@ Widget pageHeader(
       //   //       color: Colors.white,
       //   //     ))
       //SizedBox(width: 200),
-      CancelButton(session, participant),
+      CancelButton(session, participant, routerDelegate),
     ],
     centerTitle: false,
     title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -98,28 +97,33 @@ Widget pageHeader(
 //   }
 // }
 class CancelButton extends StatefulWidget {
-  const CancelButton(this.session, this.participant, {Key? key})
+  const CancelButton(this.session, this.participant, this.routerDelegate,
+      {Key? key})
       : super(key: key);
   final ScrumSessionParticipant? participant;
   final ScrumSession? session;
+  final AppRouterDelegate? routerDelegate;
 
   @override
   State<CancelButton> createState() => _CancelButtonState();
 }
 
 class _CancelButtonState extends State<CancelButton> {
-  bool textCheck = true;
+  // bool textCheck = true;
   String returnText() {
-    if (widget.participant!.isOwner)
+    if (widget.participant?.isOwner ?? false)
       return "END SESSION";
     else {
-      textCheck = false;
+      //textCheck = false;
       return "LEAVE SESSION";
     }
   }
 
-  void initialiseScrumSession() async {
+  void removeParticipantFromScrumSession() async {
+    widget.routerDelegate?.pushRoute("/join/${widget.session?.id}");
+
     ScrumPokerFirebase spfb = await ScrumPokerFirebase.instance;
+
     spfb.removeFromExistingSession();
   }
 
@@ -129,7 +133,7 @@ class _CancelButtonState extends State<CancelButton> {
     return pillButton(
       context: context,
       text: returnText(),
-      onPress: initialiseScrumSession,
+      onPress: removeParticipantFromScrumSession,
     );
   }
 }
